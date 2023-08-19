@@ -1,0 +1,54 @@
+total= 32 + 3 + 1 + 1 + 3.5 + 2 + 1 +6 +14 +2 +4 +1 +1 +6+5 +2 +2 +2 +4 +2 +4 +5 +1 +2= 106
+create backend server 32h
+
+make auth in mobile 3h
+home screen 1h
+settings 1h
+stages 3.5h
+stage data 2h
+add student 1h
+student exam results 6h
+- make attend screen foreach lecture 14h
+- make attend manula 2h
+- make extract qrs from list 4h
+- create exam 1h
+- create lecture 1h
+- student profile screen 6h
+- modify qr size
+- make the student statistics only after he joined
+7/8
+- add exam statistcis (#(80-100) - #(70-80) - ....etc) 5h
+- replace x in attend with forgot book 2h
+- add lecture statistics (#late - #attend -#forgot_Book) 2h
+- send student stats to parent via whatsapp 2h
+
+10/8
+- make fields are optional when add new student
+- modify the غياب to غياب الطالب في صفحة الطالب
+- search student in stage 4h
+- search student in all stages 2h
+- in statistics when press on item show all students with the grade range 4h
+- edit exam or delete exam and same as lecture 5h
+- make phone numbers to be in correct format and not accept anything 1h
+- edit  student data 2h
+
+
+- make add group
+- get all groups for the each stage
+- make when assistant get user profile get his group 
+- add groups in add student 
+- make statistics for each group and make the user can select any of them to show stats
+- add section in home for the highlevel for the secondary 
+
+
+
+
+
+- fix arabic in qr
+- add admin previlages 
+- add assistant previlages (can add student/exam/lecture , can attend studetns and can put grades)
+- add personal picture
+- make group while attend students (a/b/c/d)
+- remove register from login
+
+
