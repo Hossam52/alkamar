@@ -179,6 +179,8 @@ class StudentModel {
   final String qrCodePath;
   final String created_at;
   final PaymentsModel? last_payment;
+  final int? group_id;
+  final String? group_title;
   DateTime createdDate;
 
   final String qr_code_url;
@@ -207,6 +209,8 @@ class StudentModel {
     required this.created_at,
     required this.stage,
     required this.last_payment,
+    this.group_id,
+    this.group_title,
     this.grades,
     this.attendances,
     this.homeworks,
@@ -270,6 +274,8 @@ class StudentModel {
       last_payment: json['last_payment'] == null
           ? null
           : PaymentsModel.fromJson(json['last_payment']),
+      group_id: json['group_id'],
+      group_title: json['group_title'],
     );
   }
   String get generateCodeWithName => '$code - $name';
@@ -305,6 +311,7 @@ class StudentModel {
     attendances![attendanceIndex].attend_status = attendance.attend_status;
     attendances![attendanceIndex].studentId = id;
     attendances![attendanceIndex].lecId = attendance.lecId;
+    attendances![attendanceIndex].group = attendance.group;
   }
 
   num getGradeByExamId(int examId) {

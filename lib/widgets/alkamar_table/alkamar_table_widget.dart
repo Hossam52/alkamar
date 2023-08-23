@@ -169,7 +169,11 @@ class _ContentCell extends StatelessWidget {
         color: cell.color,
         margin: EdgeInsets.all(4.w),
         child: Center(
-            child: TextWidget(fontSize: FontSize.s12, label: cell.content)),
+            child: TextWidget(
+          fontSize: FontSize.s12,
+          label: cell.content,
+          textAlign: TextAlign.center,
+        )),
       ),
     );
   }

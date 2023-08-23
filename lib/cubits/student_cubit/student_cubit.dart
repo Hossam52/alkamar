@@ -107,18 +107,21 @@ class StudentCubit extends Cubit<StudentStates> {
   }
 
   Future<void> attend(
-      String lectureId, AttendStatusEnum attendStatusEnum) async {
-    _attendStudent(lectureId, attendStatusEnum.getAttendStatusIndex);
+      String lectureId, AttendStatusEnum attendStatusEnum, int? groupId) async {
+    _attendStudent(lectureId, attendStatusEnum.getAttendStatusIndex, groupId);
   }
 
-  Future<void> _attendStudent(String lectureId, int? attendStatus) async {
+  Future<void> _attendStudent(
+      String lectureId, int? attendStatus, int? groupId) async {
     try {
       if (errorOnSearchedStudent) throw 'حدث خطأ اثناء تحضير الطالب';
       emit(AttendStudentLoadingState());
       final res = await AppServices.storeAttendance(
-          lectureId: lectureId,
-          studentId: searchedStudent!.id.toString(),
-          attend_status: attendStatus);
+        lectureId: lectureId,
+        studentId: searchedStudent!.id.toString(),
+        attend_status: attendStatus,
+        groupId: groupId,
+      );
       if (res['attendance'] != null) {
         final attend = AttendanceModel.fromJson(res['attendance']);
         _studentAttendanceRespnonse?.setAttendance(attend);

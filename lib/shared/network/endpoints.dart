@@ -55,4 +55,8 @@ class EndPoints {
 
   // Search endpoints
   static const String searchStudent = '/search';
+
+  // groups endpoints
+  static const String allGroups = '/groups';
+  static const String storeGroups = '/groups/store';
 }

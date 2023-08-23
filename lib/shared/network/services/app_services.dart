@@ -33,6 +33,7 @@ class AppServices {
     required String gender,
     required String problems,
     int? studentStatus,
+    int? groupId,
   }) async {
     try {
       final response = await AppDioHelper.postData(
@@ -51,6 +52,7 @@ class AppServices {
           'gender': gender,
           'problems': problems,
           if (studentStatus != null) 'student_status': studentStatus,
+          if (groupId != null) 'group_id': groupId,
         },
       );
       return response.data;
@@ -71,6 +73,7 @@ class AppServices {
     required String? address,
     required String? problems,
     required int? studentStatus,
+    required int? groupId,
   }) async {
     try {
       final response = await AppDioHelper.postData(
@@ -88,6 +91,7 @@ class AppServices {
           'address': address,
           'problems': problems,
           if (studentStatus != null) 'student_status': studentStatus,
+          if (groupId != null) 'group_id': groupId,
         },
       );
       return response.data;
@@ -452,15 +456,15 @@ class AppServices {
     }
   }
 
-  static Future<Map<String, dynamic>> lectureStats({
-    required int lecture_id,
-  }) async {
+  static Future<Map<String, dynamic>> lectureStats(
+      {required int lecture_id, List<int>? groupIds}) async {
     try {
       final response = await AppDioHelper.getData(
         url: EndPoints.lectureStats,
         token: Constants.token,
         query: {
           'lecture_id': lecture_id,
+          if (groupIds != null) 'group_id[]': groupIds
         },
       );
       return response.data;
@@ -474,6 +478,7 @@ class AppServices {
     required String studentId,
     required String lectureId,
     required int? attend_status,
+    required int? groupId,
   }) async {
     try {
       final response = await AppDioHelper.postData(
@@ -483,6 +488,7 @@ class AppServices {
           'student_id': studentId,
           'lec_id': lectureId,
           if (attend_status != null) 'attend_status': attend_status,
+          'attend_group_id': groupId,
         },
       );
       return response.data;
@@ -527,6 +533,43 @@ class AppServices {
           if (stage_id != null) 'stage_id': stage_id,
           if (code != null) 'code': code,
           if (name != null) 'name': name,
+        },
+      );
+      return response.data;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Groups endpoints
+  static Future<Map<String, dynamic>> allGroups({
+    int? stageId,
+  }) async {
+    try {
+      final response = await AppDioHelper.getData(
+        url: EndPoints.allGroups,
+        token: Constants.token,
+        query: {
+          'stage_id': stageId,
+        },
+      );
+      return response.data;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  static Future<Map<String, dynamic>> addGroup({
+    required int stageId,
+    required String title,
+  }) async {
+    try {
+      final response = await AppDioHelper.postData(
+        url: EndPoints.storeGroups,
+        token: Constants.token,
+        data: {
+          'stage_id': stageId,
+          'title': title,
         },
       );
       return response.data;

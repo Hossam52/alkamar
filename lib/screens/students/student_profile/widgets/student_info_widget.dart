@@ -23,9 +23,11 @@ class StudentInformation extends StatelessWidget {
         children: [
           _studentField('الكود', student.code),
           _studentField('الاسم', student.name),
+          _studentField('المرحلة', student.stage),
+          _studentField(
+              'المجموعة', student.group_title ?? 'لم يتم تعيين مجموعة'),
           _studentField('تاريخ الالتحاق',
               Methods.formatDate(student.createdDate, appendYear: true)),
-          _studentField('المرحلة', student.stage),
           _studentParentField('رقم الاب', student.fatherPhone),
           _studentParentField('رقم الام', student.motherPhone),
           _studentParentField('رقم الطالب', student.studentPhone),

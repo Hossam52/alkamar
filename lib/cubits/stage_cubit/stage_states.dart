@@ -59,3 +59,23 @@ class CreatePaymentErrorState extends StageStates {
   final String error;
   CreatePaymentErrorState({required this.error});
 }
+
+//GetGroups online fetch data
+class GetGroupsLoadingState extends StageStates {}
+
+class GetGroupsSuccessState extends StageStates {}
+
+class GetGroupsErrorState extends StageStates {
+  final String error;
+  GetGroupsErrorState({required this.error});
+}
+
+//AddGroup online fetch data
+class AddGroupLoadingState extends StageStates {}
+
+class AddGroupSuccessState extends StageStates {}
+
+class AddGroupErrorState extends StageStates {
+  final String error;
+  AddGroupErrorState({required this.error});
+}

@@ -1,5 +1,7 @@
 import 'package:alqamar/cubits/stage_cubit/stage_cubit.dart';
+import 'package:alqamar/cubits/stage_cubit/stage_states.dart';
 import 'package:alqamar/models/stage/stage_model.dart';
+import 'package:alqamar/screens/stage_data/widgets/add_group_widget.dart';
 import 'package:alqamar/screens/stage_data/widgets/add_payment_widget.dart';
 import 'package:alqamar/screens/students/student_homeworks/student_list_homeworks_screen.dart';
 import 'package:alqamar/screens/qr/qr_screen.dart';
@@ -14,6 +16,8 @@ import 'package:alqamar/screens/students/student_profile/student_profile_screen.
 import 'package:alqamar/shared/methods.dart';
 import 'package:alqamar/shared/presentation/resourses/color_manager.dart';
 import 'package:alqamar/shared/presentation/resourses/font_manager.dart';
+import 'package:alqamar/widgets/default_loader.dart';
+import 'package:alqamar/widgets/error_widget.dart';
 import 'package:alqamar/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,7 +35,12 @@ class _StageDataScreenState extends State<StageDataScreen> {
   @override
   void initState() {
     StageCubit.instance(context).setStage = widget.stage;
+    getAllGroups();
     super.initState();
+  }
+
+  Future<void> getAllGroups() async {
+    StageCubit.instance(context).getGroups();
   }
 
   @override
@@ -42,172 +51,154 @@ class _StageDataScreenState extends State<StageDataScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Builder(builder: (context) {
-            return GridView(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount:
-                      (MediaQuery.of(context).size.width * 0.006).toInt(),
-                  childAspectRatio: 2 / 2,
-                  crossAxisSpacing: 10.w,
-                  mainAxisSpacing: 10.w),
-              children: [
-                _CustomItem(
-                  title: 'بحث عن طالب',
-                  icon: Icons.search,
-                  onPressed: () {
-                    Methods.navigateTo(
-                        context, StudentSearchScreen(stage: widget.stage));
-                  },
-                ),
-                _CustomItem(
-                  title: 'تسجيل طالب جديد',
-                  icon: Icons.person_add_alt,
-                  onPressed: () {
-                    Methods.navigateTo(
-                        context,
-                        BlocProvider.value(
-                          value: StageCubit.instance(context),
-                          child: const AddStudentScreen(),
-                        ));
-                  },
-                ),
-                _CustomItem(
-                  title: 'قائمة الطلاب',
-                  icon: Icons.list,
-                  onPressed: () {
-                    Methods.navigateTo(
-                        context,
-                        StudentListAttendances(
-                          stage: widget.stage,
-                        ));
-                  },
-                ),
-                _CustomItem(
-                  title: 'درجات الامتحانات',
-                  icon: Icons.format_list_numbered_rtl_sharp,
-                  onPressed: () {
-                    Methods.navigateTo(
-                        context,
-                        StudentListExams(
-                          stage: widget.stage,
-                        ));
-                  },
-                ),
-                _CustomItem(
-                  title: 'المصروفات',
-                  icon: Icons.money,
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) {
-                        return BlocProvider.value(
-                          value: StageCubit.instance(context),
-                          child: StudentPaymentsScreen(
+          child: StageBlocBuilder(
+            builder: (context, state) {
+              if (state is GetGroupsLoadingState) {
+                return const DefaultLoader();
+              }
+              if (state is GetGroupsErrorState) {
+                return CustomErrorWidget(onPressed: getAllGroups);
+              }
+              return GridView(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount:
+                        (MediaQuery.of(context).size.width * 0.006).toInt(),
+                    childAspectRatio: 2 / 2,
+                    crossAxisSpacing: 10.w,
+                    mainAxisSpacing: 10.w),
+                children: [
+                  _CustomItem(
+                    title: 'بحث عن طالب',
+                    icon: Icons.search,
+                    onPressed: () {
+                      Methods.navigateTo(
+                          context, StudentSearchScreen(stage: widget.stage));
+                    },
+                  ),
+                  _CustomItem(
+                    title: 'تسجيل طالب جديد',
+                    icon: Icons.person_add_alt,
+                    onPressed: () {
+                      Methods.navigateTo(
+                          context,
+                          BlocProvider.value(
+                            value: StageCubit.instance(context),
+                            child: const AddStudentScreen(),
+                          ));
+                    },
+                  ),
+                  _CustomItem(
+                    title: 'قائمة الطلاب',
+                    icon: Icons.list,
+                    onPressed: () {
+                      Methods.navigateTo(
+                          context,
+                          StudentListAttendances(
                             stage: widget.stage,
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-                _CustomItem(
-                  title: 'إضافة محاضرة',
-                  icon: Icons.add,
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) {
-                        return BlocProvider.value(
-                          value: StageCubit.instance(context),
-                          child: const AddLectureWidget(),
-                        );
-                      },
-                    );
-                  },
-                ),
-                _CustomItem(
-                  title: 'إضافة امتحان',
-                  icon: Icons.add,
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) {
-                        return BlocProvider.value(
-                          value: StageCubit.instance(context),
-                          child: const AddExamWidget(),
-                        );
-                      },
-                    );
-                  },
-                ),
-                _CustomItem(
-                  title: 'إضافة مصروفات شهر',
-                  icon: Icons.add,
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) {
-                        return BlocProvider.value(
-                          value: StageCubit.instance(context),
-                          child: const AddPaymentWidget(),
-                        );
-                      },
-                    );
-                  },
-                ),
-                _CustomItem(
-                  title: 'الواجبات',
-                  icon: Icons.edit_document,
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) {
-                        return BlocProvider.value(
-                          value: StageCubit.instance(context),
-                          child: StudentListHomeworks(
+                          ));
+                    },
+                  ),
+                  _CustomItem(
+                    title: 'درجات الامتحانات',
+                    icon: Icons.format_list_numbered_rtl_sharp,
+                    onPressed: () {
+                      Methods.navigateTo(
+                          context,
+                          StudentListExams(
                             stage: widget.stage,
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-                _CustomItem(
-                  title: 'بحث بال QR',
-                  icon: Icons.image,
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (_) {
-                        return BlocProvider.value(
-                          value: StageCubit.instance(context),
-                          child: QrScreen(
-                            title: 'بحث بال QR',
-                            showManual: false,
-                            onManual: (val) async {},
-                            onQr: (val) async {
-                              if (val == null || int.tryParse(val) == null) {
-                                Methods.showSnackBar(context, 'خطأ في ال QR');
-                                return;
-                              }
-                              await Methods.navigateTo(
-                                  context,
-                                  StudentProfileScreen(
-                                      studentId: int.parse(val),
-                                      stageModel: null));
-                            },
-                            actionsWidget: Container(),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ],
-            );
-          }),
+                          ));
+                    },
+                  ),
+                  _CustomItem(
+                    title: 'المصروفات',
+                    icon: Icons.money,
+                    onPressed: () {
+                      _showDialog(
+                        context,
+                        StudentPaymentsScreen(stage: widget.stage),
+                      );
+                    },
+                  ),
+                  _CustomItem(
+                    title: 'الواجبات',
+                    icon: Icons.edit_document,
+                    onPressed: () {
+                      _showDialog(
+                        context,
+                        StudentListHomeworks(stage: widget.stage),
+                      );
+                    },
+                  ),
+                  _CustomItem(
+                    title: 'إضافة محاضرة',
+                    icon: Icons.add,
+                    onPressed: () {
+                      _showDialog(context, const AddLectureWidget());
+                    },
+                  ),
+                  _CustomItem(
+                    title: 'إضافة امتحان',
+                    icon: Icons.add,
+                    onPressed: () {
+                      _showDialog(context, const AddExamWidget());
+                    },
+                  ),
+                  _CustomItem(
+                    title: 'إضافة مصروفات شهر',
+                    icon: Icons.add,
+                    onPressed: () {
+                      _showDialog(context, const AddPaymentWidget());
+                    },
+                  ),
+                  _CustomItem(
+                    title: 'إضافة مجموعة جديدة',
+                    icon: Icons.add,
+                    onPressed: () {
+                      _showDialog(context, const AddGroupWidget());
+                    },
+                  ),
+                  _CustomItem(
+                    title: 'بحث بال QR',
+                    icon: Icons.image,
+                    onPressed: () {
+                      _showDialog(
+                        context,
+                        QrScreen(
+                          title: 'بحث بال QR',
+                          showManual: false,
+                          onManual: (val) async {},
+                          onQr: (val) async {
+                            if (val == null || int.tryParse(val) == null) {
+                              Methods.showSnackBar(context, 'خطأ في ال QR');
+                              return;
+                            }
+                            await Methods.navigateTo(
+                                context,
+                                StudentProfileScreen(
+                                    studentId: int.parse(val),
+                                    stageModel: null));
+                          },
+                          actionsWidget: Container(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
+    );
+  }
+
+  Future<dynamic> _showDialog(BuildContext context, Widget child) {
+    return showDialog(
+      context: context,
+      builder: (_) {
+        return BlocProvider.value(
+            value: StageCubit.instance(context), child: child);
+      },
     );
   }
 }

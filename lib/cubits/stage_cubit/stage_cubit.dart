@@ -1,3 +1,4 @@
+import 'package:alqamar/models/groups/group_model.dart';
 import 'package:alqamar/models/stage/stage_model.dart';
 import 'package:alqamar/models/student/student_model.dart';
 import 'package:alqamar/shared/network/services/app_services.dart';
@@ -30,6 +31,7 @@ class StageCubit extends Cubit<StageStates> {
     required String gender,
     String problems = '',
     int? studentStatus,
+    int? groupId,
   }) async {
     try {
       emit(CreateStudentLoadingState());
@@ -46,6 +48,7 @@ class StageCubit extends Cubit<StageStates> {
         gender: gender,
         problems: problems,
         studentStatus: studentStatus,
+        groupId: groupId,
       );
       emit(CreateStudentSuccessState());
     } catch (e) {
@@ -65,6 +68,7 @@ class StageCubit extends Cubit<StageStates> {
     String? address,
     String? problems,
     int? studentStatus,
+    int? groupId,
   }) async {
     try {
       emit(UpdateStudentLoadingState());
@@ -80,6 +84,7 @@ class StageCubit extends Cubit<StageStates> {
         address: address,
         problems: problems,
         studentStatus: studentStatus,
+        groupId: groupId,
       );
       debugPrint(res.toString());
       final student = StudentModel.fromJson(res['student']);
@@ -125,6 +130,32 @@ class StageCubit extends Cubit<StageStates> {
       emit(CreateExamSuccessState());
     } catch (e) {
       emit(CreateExamErrorState(error: e.toString()));
+    }
+  }
+
+  GroupResponseModel? groupResponseModel;
+  bool get errorOnGroups => groupResponseModel == null;
+  List<GroupModel> get groups => groupResponseModel?.groups ?? [];
+  Future<void> getGroups() async {
+    try {
+      emit(GetGroupsLoadingState());
+      final res = await AppServices.allGroups(stageId: stage.id);
+      groupResponseModel = GroupResponseModel.fromMap(res);
+      emit(GetGroupsSuccessState());
+    } catch (e) {
+      emit(GetGroupsErrorState(error: e.toString()));
+    }
+  }
+
+  Future<void> addGroup(String title) async {
+    try {
+      emit(AddGroupLoadingState());
+      final res = await AppServices.addGroup(stageId: stage.id, title: title);
+      final group = GroupModel.fromMap(res['group']);
+      groupResponseModel?.appendGroup(group);
+      emit(AddGroupSuccessState());
+    } catch (e) {
+      emit(AddGroupErrorState(error: e.toString()));
     }
   }
 }

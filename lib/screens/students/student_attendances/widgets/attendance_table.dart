@@ -1,3 +1,5 @@
+import 'package:alqamar/shared/presentation/resourses/color_manager.dart';
+import 'package:alqamar/widgets/student_group_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,6 +16,7 @@ import 'package:alqamar/shared/methods.dart';
 import 'package:alqamar/widgets/alkamar_table/alkamar_table_data.dart';
 import 'package:alqamar/widgets/alkamar_table/alkamar_table_widget.dart';
 import 'package:alqamar/widgets/custom_button.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AttendanceTable extends StatefulWidget {
   final List<StudentModel> students;
@@ -60,8 +63,12 @@ class _AttendanceTableState extends State<AttendanceTable> {
             student.attendances?.length ?? 0,
             (index) {
               final attendance = student.attendances![index];
+              String attendString = attendance.group == null
+                  ? ''
+                  : '\n${attendance.group?.title}';
               return CellItem(
-                  content: attendance.attendStatusEnum.getAttendanceText,
+                  content: attendance.attendStatusEnum.getAttendanceText +
+                      attendString,
                   onPressed: () async {
                     await showDialog(
                       context: context,
@@ -90,39 +97,90 @@ class _CustomAttendButton extends StatelessWidget {
     return CustomButton(
       text: 'تحضير',
       onPressed: () async {
-        await Methods.navigateTo(
-            context,
-            BlocProvider.value(
-                value: StudentCubit.instance(context),
-                child: QrScreen(
-                  title: lec.title,
-                  actionsWidget:
-                      ConfirmAttendActions(lectureId: lec.id.toString()),
-                  onManual: (studentCode) async {
-                    await showDialog(
-                        context: context,
-                        builder: (_) => BlocProvider.value(
-                            value: StudentCubit.instance(context),
-                            child: _confirm(studentCode: studentCode)));
-                  },
-                  onQr: (studentid) async {
-                    await showDialog(
-                        context: context,
-                        builder: (_) => BlocProvider.value(
-                            value: StudentCubit.instance(context),
-                            child: _confirm(studentId: studentid)));
-                  },
-                )));
-        StudentCubit.instance(context).getStudentAttendances();
+        final groupId = await showDialog<int?>(
+            context: context, builder: (_) => _SelectGroup());
+        if (groupId != null) {
+          // ignore: use_build_context_synchronously
+          await Methods.navigateTo(
+              context,
+              BlocProvider.value(
+                  value: StudentCubit.instance(context),
+                  child: QrScreen(
+                    title: lec.title,
+                    actionsWidget: ConfirmAttendActions(
+                      lectureId: lec.id.toString(),
+                      selectedGroupId: groupId,
+                    ),
+                    onManual: (studentCode) async {
+                      await showDialog(
+                          context: context,
+                          builder: (_) => BlocProvider.value(
+                              value: StudentCubit.instance(context),
+                              child: _confirm(
+                                  studentCode: studentCode, groupId: groupId)));
+                    },
+                    onQr: (studentid) async {
+                      await showDialog(
+                          context: context,
+                          builder: (_) => BlocProvider.value(
+                              value: StudentCubit.instance(context),
+                              child: _confirm(
+                                  studentId: studentid, groupId: groupId)));
+                    },
+                  )));
+          StudentCubit.instance(context).getStudentAttendances();
+        }
       },
     );
   }
 
-  ConfirmAttendDialog _confirm({String? studentId, String? studentCode}) {
+  ConfirmAttendDialog _confirm(
+      {String? studentId, String? studentCode, int? groupId}) {
     return ConfirmAttendDialog(
       studentCode: studentCode,
       studentId: studentId,
-      actionsWidget: ConfirmAttendActions(lectureId: lec.id.toString()),
+      actionsWidget: ConfirmAttendActions(
+        lectureId: lec.id.toString(),
+        selectedGroupId: groupId,
+      ),
+    );
+  }
+}
+
+class _SelectGroup extends StatefulWidget {
+  const _SelectGroup({super.key});
+
+  @override
+  State<_SelectGroup> createState() => _SelectGroupState();
+}
+
+class _SelectGroupState extends State<_SelectGroup> {
+  int? groupId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: ColorManager.primary,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            StudentGroupWidget(onChangeGroup: (groupId) {
+              this.groupId = groupId;
+            }),
+            SizedBox(height: 20.h),
+            CustomButton(
+              text: 'اختيار الجروب',
+              onPressed: () {
+                if (groupId == null) {
+                  Methods.showSnackBar(context, 'يجب اختيار الجروب اولا');
+                  return;
+                }
+                Navigator.pop(context, groupId);
+              },
+            )
+          ],
+        ),
+      ),
     );
   }
 }

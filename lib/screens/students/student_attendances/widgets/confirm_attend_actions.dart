@@ -4,50 +4,77 @@ import 'package:alqamar/models/attend_status_enum.dart';
 import 'package:alqamar/shared/presentation/resourses/color_manager.dart';
 import 'package:alqamar/widgets/custom_button.dart';
 import 'package:alqamar/widgets/default_loader.dart';
+import 'package:alqamar/widgets/student_group_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class ConfirmAttendActions extends StatelessWidget {
-  const ConfirmAttendActions({super.key, required this.lectureId});
+class ConfirmAttendActions extends StatefulWidget {
+  const ConfirmAttendActions(
+      {super.key, required this.lectureId, this.selectedGroupId});
   final String lectureId;
+  final int? selectedGroupId;
+
+  @override
+  State<ConfirmAttendActions> createState() => _ConfirmAttendActionsState();
+}
+
+class _ConfirmAttendActionsState extends State<ConfirmAttendActions> {
+  @override
+  void initState() {
+    if (widget.selectedGroupId == null) {
+      groupId = StudentCubit.instance(context).searchedStudent!.group_id;
+    } else {
+      groupId = widget.selectedGroupId;
+    }
+    super.initState();
+  }
+
+  int? groupId;
   @override
   Widget build(BuildContext context) {
-    return StudentBlocConsumer(
-      listener: (context, state) {},
+    return StudentBlocBuilder(
       builder: (context, state) {
         final cubit = StudentCubit.instance(context);
         if (state is AttendStudentLoadingState) return const DefaultLoader();
 
-        return Column(
-          children: [
-            _customMethod(
-                cubit: cubit,
-                attendStatus: AttendStatusEnum.attend,
-                icon: Icons.done),
-            _sizedBox(),
-            Row(
-              children: [
-                Expanded(
-                  child: _customMethod(
-                      cubit: cubit,
-                      attendStatus: AttendStatusEnum.forgot,
-                      icon: Icons.close),
-                ),
-                SizedBox(width: 10.w),
-                Expanded(
-                  child: _customMethod(
-                      cubit: cubit,
-                      attendStatus: AttendStatusEnum.late,
-                      icon: Icons.timer_sharp),
-                ),
-              ],
-            ),
-            Divider(color: ColorManager.accentColor),
-            _customMethod(
-                cubit: cubit,
-                attendStatus: AttendStatusEnum.cancel,
-                icon: Icons.cancel),
-          ],
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              if (widget.selectedGroupId == null)
+                StudentGroupWidget(
+                    groupId: groupId,
+                    onChangeGroup: (groupId) {
+                      this.groupId = groupId;
+                    }),
+              _customMethod(
+                  cubit: cubit,
+                  attendStatus: AttendStatusEnum.attend,
+                  icon: Icons.done),
+              _sizedBox(),
+              Row(
+                children: [
+                  Expanded(
+                    child: _customMethod(
+                        cubit: cubit,
+                        attendStatus: AttendStatusEnum.forgot,
+                        icon: Icons.close),
+                  ),
+                  SizedBox(width: 10.w),
+                  Expanded(
+                    child: _customMethod(
+                        cubit: cubit,
+                        attendStatus: AttendStatusEnum.late,
+                        icon: Icons.timer_sharp),
+                  ),
+                ],
+              ),
+              Divider(color: ColorManager.accentColor),
+              _customMethod(
+                  cubit: cubit,
+                  attendStatus: AttendStatusEnum.cancel,
+                  icon: Icons.cancel),
+            ],
+          ),
         );
       },
     );
@@ -63,7 +90,7 @@ class ConfirmAttendActions extends StatelessWidget {
       backgroundColor: attendStatus.getAttendanceColor,
       leadingIcon: Icon(icon),
       onPressed: () {
-        cubit.attend(lectureId, attendStatus);
+        cubit.attend(widget.lectureId, attendStatus, groupId);
       },
     );
   }

@@ -18,17 +18,12 @@ class LectureCubit extends Cubit<LectureStates> {
 
   LectureStatisticsResponse? _lectureStats;
   bool get errorLoadingStats => _lectureStats == null;
-  int get totalAttendances => _lectureStats?.total_attendance_count ?? 0;
-  int get totalLateCount => _lectureStats?.late_count ?? 0;
-  int get totalForgotCount => _lectureStats?.forgot_book_count ?? 0;
-  int get totalAttendCount => _lectureStats?.attends_count ?? 0;
-  int get totalAbsence => _lectureStats?.absence_count ?? 0;
-  int get totalStudents => _lectureStats?.students_count ?? 0;
-  int get totalDisalbed => _lectureStats?.disabled_count ?? 0;
-  Future<void> getLectureStatistics() async {
+  List<LectureStatItem> get lectureStats => _lectureStats?.stats ?? [];
+  Future<void> getLectureStatistics({int? groupId}) async {
     try {
       emit(GetLectureStatisticsLoadingState());
-      final response = await AppServices.lectureStats(lecture_id: lecture.id);
+      final response = await AppServices.lectureStats(
+          lecture_id: lecture.id, groupIds: groupId == null ? null : [groupId]);
       _lectureStats = LectureStatisticsResponse.fromMap(response);
       emit(GetLectureStatisticsSuccessState());
     } catch (e) {

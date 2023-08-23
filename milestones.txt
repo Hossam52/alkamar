@@ -1,4 +1,4 @@
-total= 32 + 3 + 1 + 1 + 3.5 + 2 + 1 +6 +14 +2 +4 +1 +1 +6+5 +2 +2 +2 +4 +2 +4 +5 +1 +2= 106
+total= 32 + 3 + 1 + 1 + 3.5 + 2 + 1 +6 +14 +2 +4 +1 +1 +6+5 +2 +2 +2 +4 +2 +4 +5 +1 +2 + 4 + 1= 111
 create backend server 32h
 
 make auth in mobile 3h
@@ -34,15 +34,21 @@ student exam results 6h
 
 
 - make add group
-- get all groups for the each stage
-- make when assistant get user profile get his group 
-- add groups in add student 
-- make statistics for each group and make the user can select any of them to show stats
+- get all groups for the each stage(1h)
+- make when assistant get user profile get his group(done) 
+- add groups in add student (1h)
+- make statistics for each group and make the user can select any of them to show stats(1h)
 - add section in home for the highlevel for the secondary 
+- move students from any group to another(done)
 
 
-
-
+backend
+- add group table,model,controller and resource(done)4h
+- take in consideration when add new group what to do to the other lectures (1h)
+- add intermidate table for manage lecture and it's associative groups(done)1h
+- when get any lecture return associative groups and dates
+- modify lecture stats to be suitable for groups (can select any group to view)(done)
+- attend student by qr when the std not in the group (either attend in his group radio button or attend his in another group)
 
 - fix arabic in qr
 - add admin previlages 

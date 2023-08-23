@@ -1,5 +1,6 @@
 import 'package:alqamar/cubits/lecture_cubit/lecture_cubit.dart';
 import 'package:alqamar/cubits/lecture_cubit/lecture_states.dart';
+import 'package:alqamar/cubits/stage_cubit/stage_cubit.dart';
 import 'package:alqamar/models/lecture/lecture_model.dart';
 import 'package:alqamar/screens/auth/widgets/auth_text_field.dart';
 import 'package:alqamar/shared/methods.dart';
@@ -13,14 +14,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class LectureStatsScreen extends StatelessWidget {
+class LectureStatsScreen extends StatefulWidget {
   const LectureStatsScreen({Key? key, required this.lecture}) : super(key: key);
   final LectureModel lecture;
+
+  @override
+  State<LectureStatsScreen> createState() => _LectureStatsScreenState();
+}
+
+class _LectureStatsScreenState extends State<LectureStatsScreen> {
+  int? selectedGroupId;
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => LectureCubit(lecture)..getLectureStatistics(),
-        child: LectureBlocBuilder(builder: (context, state) {
+        create: (context) =>
+            LectureCubit(widget.lecture)..getLectureStatistics(),
+        child: LectureBlocConsumer(listener: (context, state) {
+          if (state is GetLectureStatisticsErrorState) {
+            Methods.showSnackBar(context, state.error);
+          }
+        }, builder: (context, state) {
           final lecture = LectureCubit.instance(context).lecture;
           return Scaffold(
             appBar: AppBar(
@@ -56,6 +69,19 @@ class LectureStatsScreen extends StatelessWidget {
                 child: ListView(
                   children: [
                     _ExamDetails(lec: lecture),
+                    _GroupSelection(
+                      selectedGroupId: selectedGroupId,
+                      onChangeGroup: (id) {
+                        selectedGroupId = id;
+                      },
+                    ),
+                    CustomButton(
+                      text: 'كل المجموعات',
+                      onPressed: () {
+                        selectedGroupId = null;
+                        LectureCubit.instance(context).getLectureStatistics();
+                      },
+                    ),
                     Builder(
                       builder: (context) {
                         final cubit = LectureCubit.instance(context);
@@ -64,7 +90,8 @@ class LectureStatsScreen extends StatelessWidget {
                         }
                         if (cubit.errorLoadingStats) {
                           return CustomErrorWidget(onPressed: () {
-                            cubit.getLectureStatistics();
+                            cubit.getLectureStatistics(
+                                groupId: selectedGroupId);
                           });
                         }
                         return Padding(
@@ -77,15 +104,26 @@ class LectureStatsScreen extends StatelessWidget {
                                     fontWeight: FontWeight.bold,
                                     fontSize: FontSize.s18),
                               ),
-                              _field('عدد الحضور', '${cubit.totalAttendCount}'),
-                              _field('نسيان الكراسة ',
-                                  '${cubit.totalForgotCount}'),
-                              _field(
-                                  'عدد المتأخرين', '${cubit.totalLateCount}'),
-                              _field('عدد المتغيبين', '${cubit.totalAbsence}'),
-                              _field('عدد المتوقفين', '${cubit.totalDisalbed}'),
-                              _field('الاجمالي',
-                                  '${cubit.totalAttendances} حضور من عدد ${cubit.totalStudents} طالب منتظم'),
+                              ...cubit.lectureStats
+                                  .map((stat) => Column(
+                                        children: [
+                                          _field('المجموعة',
+                                              stat.group_title ?? 'الكل'),
+                                          _field('عدد الحضور',
+                                              '${stat.attends_count}'),
+                                          _field('نسيان الكراسة ',
+                                              '${stat.forgot_book_count}'),
+                                          _field('عدد المتأخرين',
+                                              '${stat.late_count}'),
+                                          _field('عدد المتغيبين',
+                                              '${stat.absence_count}'),
+                                          _field('عدد المتوقفين',
+                                              '${stat.disabled_count}'),
+                                          _field('الاجمالي',
+                                              '${stat.total_attendance_count} حضور من عدد ${stat.students_count} طالب منتظم'),
+                                        ],
+                                      ))
+                                  .toList(),
                             ],
                           ),
                         );
@@ -110,9 +148,66 @@ class LectureStatsScreen extends StatelessWidget {
   }
 }
 
+class _GroupSelection extends StatefulWidget {
+  const _GroupSelection({this.selectedGroupId, required this.onChangeGroup});
+  final int? selectedGroupId;
+  final void Function(int?) onChangeGroup;
+
+  @override
+  State<_GroupSelection> createState() => _GroupSelectionState();
+}
+
+class _GroupSelectionState extends State<_GroupSelection> {
+  int? groupId;
+  @override
+  void initState() {
+    groupId = widget.selectedGroupId;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final groups = StageCubit.instance(context).groups;
+
+    return Row(
+      children: [
+        Expanded(
+          child: AuthTextField.customTextField(
+              controller: TextEditingController(),
+              label: 'المجموعة',
+              textField: DropdownButtonFormField<int?>(
+                  dropdownColor: ColorManager.primary,
+                  value: groupId,
+                  items: groups
+                      .map((e) => DropdownMenuItem(
+                          value: e.id,
+                          child: TextWidget(
+                            label: e.title,
+                          )))
+                      .toList(),
+                  onChanged: (item) {
+                    setState(() {
+                      groupId = item;
+                    });
+                  })),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: CustomButton(
+            text: 'اظهار',
+            onPressed: () {
+              LectureCubit.instance(context)
+                  .getLectureStatistics(groupId: groupId);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _DeleteLecture extends StatelessWidget {
   const _DeleteLecture({
-    super.key,
     required this.lecture,
   });
 

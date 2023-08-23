@@ -2,6 +2,7 @@ import 'package:alqamar/cubits/student_cubit/student_cubit.dart';
 import 'package:alqamar/cubits/student_cubit/student_states.dart';
 import 'package:alqamar/shared/methods.dart';
 import 'package:alqamar/shared/presentation/resourses/color_manager.dart';
+import 'package:alqamar/shared/presentation/resourses/font_manager.dart';
 import 'package:alqamar/widgets/default_loader.dart';
 import 'package:alqamar/widgets/error_widget.dart';
 import 'package:alqamar/widgets/text_widget.dart';
@@ -56,45 +57,59 @@ class ConfirmAttendDialogState extends State<ConfirmAttendDialog> {
       }, builder: (context, state) {
         final cubit = StudentCubit.instance(context);
 
-        return AlertDialog(
-          insetPadding: EdgeInsets.symmetric(horizontal: 0.w, vertical: 0),
+        return Dialog(
+          insetPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+
           backgroundColor: ColorManager.primary,
-          title: const TextWidget(label: 'حول الطالب'),
-          content: Builder(builder: (context) {
-            if (state is GetStudentDataLoadingState) {
-              return const Column(
+          child: Padding(
+            padding: EdgeInsets.all(10.h),
+            child: Builder(builder: (context) {
+              if (state is GetStudentDataLoadingState) {
+                return const Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DefaultLoader(),
+                  ],
+                );
+              }
+              if (cubit.errorOnSearchedStudent) {
+                return CustomErrorWidget(onPressed: () {
+                  cubit.getStudentData(widget.studentId, widget.studentCode);
+                });
+              }
+              final student = cubit.searchedStudent!;
+              return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  DefaultLoader(),
+                  const TextWidget(
+                    label: 'حول الطالب',
+                    fontSize: FontSize.s17,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  const Divider(),
+                  Container(
+                    color: cubit.searchedStudent != null
+                        ? cubit.searchedStudent?.last_payment?.paymentStatus
+                                .color ??
+                            ColorManager.primary
+                        : ColorManager.primary,
+                    child: _rowItem('المصروفات: ', student.paymentTitle),
+                  ),
+                  _rowItem('اسم الطالب: ', student.name),
+                  _rowItem('الكود: ', student.code),
+                  _rowItem('المجموعة: ',
+                      student.group_title ?? 'لم يتم تعيين مجموعة'),
+                  _rowItem('المرحلة: ', student.stage),
+                  StudentCubit.instance(context).errorOnSearchedStudent
+                      ? const SizedBox.shrink()
+                      : widget.actionsWidget
                 ],
               );
-            }
-            if (cubit.errorOnSearchedStudent) {
-              return CustomErrorWidget(onPressed: () {
-                cubit.getStudentData(widget.studentId, widget.studentCode);
-              });
-            }
-            final student = cubit.searchedStudent!;
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  color: cubit.searchedStudent != null
-                      ? cubit.searchedStudent?.last_payment?.paymentStatus
-                              .color ??
-                          ColorManager.primary
-                      : ColorManager.primary,
-                  child: _rowItem('المصروفات: ', student.paymentTitle),
-                ),
-                _rowItem('اسم الطالب: ', student.name),
-                _rowItem('الكود: ', student.code),
-                _rowItem('المرحلة: ', student.stage),
-              ],
-            );
-          }),
-          actions: StudentCubit.instance(context).errorOnSearchedStudent
-              ? null
-              : [widget.actionsWidget],
+            }),
+          ),
+          // actions: StudentCubit.instance(context).errorOnSearchedStudent
+          //     ? null
+          //     : [widget.actionsWidget],
         );
       }),
     );

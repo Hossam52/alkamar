@@ -1,4 +1,5 @@
 import 'package:alqamar/models/attend_status_enum.dart';
+import 'package:alqamar/models/groups/group_model.dart';
 import 'package:alqamar/shared/methods.dart';
 
 class AttendanceModel {
@@ -12,6 +13,7 @@ class AttendanceModel {
   int? attend_status; //1 attend 2 late 3 forgot book
   AttendStatusEnum attendStatusEnum;
   int? lecId;
+  GroupModel? group;
 
   AttendanceModel({
     required this.id,
@@ -22,6 +24,7 @@ class AttendanceModel {
     required this.studentId,
     required this.attend_status,
     required this.lecId,
+    required this.group,
   })  : date = DateTime.parse(lectureDate),
         attendStatusEnum = AttendStatusMethods.getAttend(attend_status);
 
@@ -35,15 +38,13 @@ class AttendanceModel {
       studentId: json['student_id'],
       attend_status: json['attend_status'],
       lecId: json['lec_id'],
+      group: json['group'] == null ? null : GroupModel.fromMap(json['group']),
     );
   }
   bool get hasAttended => attendStatusEnum != AttendStatusEnum.undefined;
   bool get getIsLate => attendStatusEnum == AttendStatusEnum.late;
   void removeAttend() {
-    attendanceId = null;
-    studentId = null;
-    attend_status = null;
-    lecId = null;
+    attendanceId = studentId = attend_status = lecId = group = null;
     attendStatusEnum = AttendStatusEnum.undefined;
   }
 

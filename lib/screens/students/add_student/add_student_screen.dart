@@ -5,6 +5,7 @@ import 'package:alqamar/models/student/student_model.dart';
 import 'package:alqamar/models/student_status_enum.dart';
 import 'package:alqamar/screens/auth/edit/change_phone_screen.dart';
 import 'package:alqamar/screens/auth/widgets/auth_text_field.dart';
+import 'package:alqamar/widgets/student_group_widget.dart';
 import 'package:alqamar/shared/methods.dart';
 import 'package:alqamar/widgets/custom_button.dart';
 import 'package:alqamar/widgets/default_loader.dart';
@@ -46,6 +47,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
   String _completeStudentPhone = '';
   String _completeWhatsPhone = '';
 
+  int? selectedGroupId;
   @override
   void initState() {
     super.initState();
@@ -66,6 +68,8 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
       _completeMotherPhone = widget.student!.motherPhone;
       _completeStudentPhone = widget.student!.studentPhone;
       _completeWhatsPhone = widget.student!.whatsapp;
+
+      selectedGroupId = widget.student!.group_id;
     }
   }
 
@@ -197,6 +201,13 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                   selectedValue: selectedStudentStatus,
                 ),
                 _space(),
+                StudentGroupWidget(
+                  groupId: selectedGroupId,
+                  onChangeGroup: (group) {
+                    selectedGroupId = group;
+                  },
+                ),
+                _space(),
                 StageBlocConsumer(
                   listener: (context, state) {
                     if (state is CreateStudentErrorState) {
@@ -229,20 +240,7 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                           }
                           if (widget.student != null) {
                             await StageCubit.instance(context).updateStudent(
-                                studentId: widget.student!.id,
-                                code: codeController.text,
-                                name: nameController.text,
-                                school: schoolController.text,
-                                fatherPhone: _completeFatherPhone,
-                                motherPhone: _completeMotherPhone,
-                                studentPhone: _completeStudentPhone,
-                                whatsapp: _completeWhatsPhone,
-                                address: addressController.text,
-                                problems: problemsController.text,
-                                studentStatus: selectedStudentStatus?.getIndex);
-                            return;
-                          }
-                          await StageCubit.instance(context).createStudent(
+                              studentId: widget.student!.id,
                               code: codeController.text,
                               name: nameController.text,
                               school: schoolController.text,
@@ -251,9 +249,26 @@ class _AddStudentScreenState extends State<AddStudentScreen> {
                               studentPhone: _completeStudentPhone,
                               whatsapp: _completeWhatsPhone,
                               address: addressController.text,
-                              gender: selectedGender!.key,
                               problems: problemsController.text,
-                              studentStatus: selectedStudentStatus?.getIndex);
+                              studentStatus: selectedStudentStatus?.getIndex,
+                              groupId: selectedGroupId,
+                            );
+                            return;
+                          }
+                          await StageCubit.instance(context).createStudent(
+                            code: codeController.text,
+                            name: nameController.text,
+                            school: schoolController.text,
+                            fatherPhone: _completeFatherPhone,
+                            motherPhone: _completeMotherPhone,
+                            studentPhone: _completeStudentPhone,
+                            whatsapp: _completeWhatsPhone,
+                            address: addressController.text,
+                            gender: selectedGender!.key,
+                            problems: problemsController.text,
+                            studentStatus: selectedStudentStatus?.getIndex,
+                            groupId: selectedGroupId,
+                          );
                         }
                       },
                     );
