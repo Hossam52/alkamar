@@ -21,12 +21,14 @@ class HomeworksTable extends StatefulWidget {
   final List<StudentModel> students;
   final List<LectureModel> lecs;
   final StageModel stage;
+  final int? totalStudents;
 
   const HomeworksTable(
       {super.key,
       required this.students,
       required this.lecs,
-      required this.stage});
+      required this.stage,
+      this.totalStudents});
 
   @override
   State<HomeworksTable> createState() => _HomeworksTableState();
@@ -38,9 +40,13 @@ class _HomeworksTableState extends State<HomeworksTable> {
     return AlkamarTable(
       stage: widget.stage,
       tableData: TableData(
+        totalItems: widget.totalStudents,
         rows: _studentRows(context),
         headers: _headers(context),
       ),
+      loadMore: () {
+        StudentCubit.instance(context).getStudentHomeworks();
+      },
     );
   }
 

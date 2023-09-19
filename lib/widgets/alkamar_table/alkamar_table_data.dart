@@ -4,11 +4,13 @@ import 'package:alqamar/models/student/student_model.dart';
 
 class TableData {
   List<TableRowItem> rows;
+  int? totalItems;
   List<HeaderItem> headers;
   bool hasCheckbox;
   double? headerHeightRatio;
   TableData({
     required this.rows,
+    this.totalItems,
     required this.headers,
     this.hasCheckbox = false,
     this.headerHeightRatio,

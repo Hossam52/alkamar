@@ -57,4 +57,9 @@ backend
 - make group while attend students (a/b/c/d)
 - remove register from login
 
+//not working in android 12(realme) 11(oppo)
+separate payment,homework,examgrades and student attendances in separate resources
+add pagination in all lists
+add total students in all lists 
+
 

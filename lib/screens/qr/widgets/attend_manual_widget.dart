@@ -45,7 +45,8 @@ class _AttendManualState extends State<AttendManual> {
               text: 'تحضير يدوي',
               onPressed: () async {
                 if (formKey.currentState!.validate()) {
-                  widget.onLoad(controller.text);
+                  await widget.onLoad(controller.text);
+                  controller.text = '';
                 }
               },
             )

@@ -27,6 +27,7 @@ class _StudentPaymentsScreenState extends State<StudentPaymentsScreen> {
           final studentCubit = StudentCubit.instance(context);
           final students = studentCubit.allStudentPayments;
           final payments = studentCubit.allPayments;
+          final totalStudents = studentCubit.totalPaymentStudents;
           return Scaffold(
             appBar: AppBar(
               title: const TextWidget(
@@ -56,6 +57,7 @@ class _StudentPaymentsScreenState extends State<StudentPaymentsScreen> {
                           students: students,
                           payments: payments,
                           stage: widget.stage,
+                          totalStudents: totalStudents,
                         )),
                       ],
                     );

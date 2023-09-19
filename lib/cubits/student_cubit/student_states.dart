@@ -29,6 +29,8 @@ class GetStudentAttendancesLoadingState extends StudentStates {}
 
 class GetStudentAttendancesSuccessState extends StudentStates {}
 
+class GetMoreStudentLoadingState extends StudentStates {}
+
 class GetStudentAttendancesErrorState extends StudentStates {
   final String error;
   GetStudentAttendancesErrorState({required this.error});

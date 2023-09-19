@@ -26,6 +26,7 @@ class _StudentListHomeworksState extends State<StudentListHomeworks> {
           final studentCubit = StudentCubit.instance(context);
           final students = studentCubit.allStudentHomeworks;
           final lecs = studentCubit.allHomeworks;
+          final totalStudents = studentCubit.totalHomeworkStudents;
           return Scaffold(
             appBar: AppBar(
               title: const TextWidget(
@@ -55,6 +56,7 @@ class _StudentListHomeworksState extends State<StudentListHomeworks> {
                           students: students,
                           lecs: lecs,
                           stage: widget.stage,
+                          totalStudents: totalStudents,
                         )),
                       ],
                     );

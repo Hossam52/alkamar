@@ -98,7 +98,6 @@ class ExamStatsScreen extends StatelessWidget {
 
 class _DeleteExam extends StatelessWidget {
   const _DeleteExam({
-    super.key,
     required this.exam,
   });
 
@@ -188,7 +187,7 @@ class _UpdateExamState extends State<_UpdateExam> {
                     flex: 3,
                     label: 'اسم الامتحان',
                     hint: "ادخل اسم الامتحان",
-                    validationRules: []),
+                    validationRules: const []),
                 AuthTextField(
                     controller: examMaxGrade,
                     flex: 3,
@@ -414,37 +413,43 @@ class _GradeStudents extends StatelessWidget {
         insetPadding: EdgeInsets.all(8.w),
         backgroundColor: ColorManager.primary,
         child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(12.w),
-            child: CustomTableDefinition(
-              tableDefinition: TableDefinition(
-                  headers: ['الكود', 'الاسم', 'الدرجة'],
-                  rows: students
-                      .map((e) => RowItem(
-                              color: e.grade.generateColor,
-                              onRowPressed: () {
-                                Methods.navigateTo(
-                                    context,
-                                    StudentProfileScreen(
-                                        studentId: e.student.id,
-                                        stageModel: null));
-                              },
-                              cells: [
-                                e.student.code,
-                                e.student.name,
-                                e.grade.gradeFromMaxGrade
-                              ]))
-                      .toList()),
-            ),
+            child: Padding(
+          padding: EdgeInsets.all(12.w),
+          child: CustomTableDefinition(
+            columnSizes: {
+              0: 36.w,
+              1: 50.w,
+              3: 90.w,
+            },
+            tableDefinition: TableDefinition(
+                headers: ['م', 'الكود', 'الاسم', 'الدرجة'],
+                rows: List.generate(students.length, (index) {
+                  final student = students[index];
+                  return RowItem(
+                      color: student.grade.generateColor,
+                      onRowPressed: () {
+                        Methods.navigateTo(
+                            context,
+                            StudentProfileScreen(
+                                studentId: student.student.id,
+                                stageModel: null));
+                      },
+                      cells: [
+                        (index + 1).toString(),
+                        student.student.code,
+                        student.student.name,
+                        student.grade.gradeFromMaxGrade
+                      ]);
+                })),
           ),
         )
 
-        // ListView.builder(itemBuilder: (_,index){
-        //   final student = students[index].student;
-        //   final grade = students[index].grade;
-        //   return ListTile(title: TextWidget(label: student.student.),)
-        // }),
-        );
+            // ListView.builder(itemBuilder: (_,index){
+            //   final student = students[index].student;
+            //   final grade = students[index].grade;
+            //   return ListTile(title: TextWidget(label: student.student.),)
+            // }),
+            ));
   }
 }
 

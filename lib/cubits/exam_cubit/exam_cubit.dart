@@ -30,6 +30,7 @@ class ExamCubit extends Cubit<ExamStates> {
       emit(GetExamStatisticsSuccessState());
     } catch (e) {
       emit(GetExamStatisticsErrorState(error: e.toString()));
+      rethrow;
     }
   }
 

@@ -2,144 +2,10 @@ import 'package:alqamar/models/attendance/attendance_model.dart';
 import 'package:alqamar/models/exam/exam_model.dart';
 import 'package:alqamar/models/grade/grade_model.dart';
 import 'package:alqamar/models/homework/homework_model.dart';
-import 'package:alqamar/models/lecture/lecture_model.dart';
 import 'package:alqamar/models/payments/payments_model.dart';
 import 'package:alqamar/models/student_status_enum.dart';
 import 'package:alqamar/shared/presentation/resourses/color_manager.dart';
 import 'package:flutter/material.dart';
-
-class StudentExamResultRespnonse {
-  final bool status;
-  final List<StudentModel> students;
-  final List<ExamModel> exams;
-
-  StudentExamResultRespnonse(
-      {required this.status, required this.students, required this.exams});
-
-  factory StudentExamResultRespnonse.fromJson(Map<String, dynamic> map) {
-    return StudentExamResultRespnonse(
-      status: map['status'] ?? false,
-      students: List<StudentModel>.from(
-          map['students']?.map((x) => StudentModel.fromJson(x))),
-      exams:
-          List<ExamModel>.from(map['exams']?.map((x) => ExamModel.fromJson(x))),
-    );
-  }
-
-  //For append collective exams
-  StudentExamResultRespnonse appendCollectiveExams(Set<int> examIds) {
-    final examList =
-        exams.where((element) => examIds.contains(element.id)).toList();
-    int totalGrade = 0;
-    for (var element in examList) {
-      totalGrade += element.maxGrade;
-    }
-    final ExamModel ex = ExamModel(
-        id: 0,
-        withoutInteract: true,
-        stageId: exams[0].stageId,
-        title: 'مجمع',
-        maxGrade: totalGrade,
-        examDate: DateTime.now().toIso8601String());
-
-    exams.add(ex);
-    for (int i = 0; i < students.length; i++) {
-      double totalGrades = 0;
-      for (var exam in examList) {
-        totalGrades += students[i].getGradeByExamId(exam.id);
-      }
-      students[i].appendGradeModel(ex, totalGrades);
-    }
-    return this;
-  }
-}
-
-class StudentAttendanceRespnonse {
-  final bool status;
-  final List<StudentModel> students;
-  final List<LectureModel> lectures;
-
-  StudentAttendanceRespnonse(
-      {required this.status, required this.students, required this.lectures});
-
-  factory StudentAttendanceRespnonse.fromJson(Map<String, dynamic> map) {
-    return StudentAttendanceRespnonse(
-      status: map['status'] ?? false,
-      students: List<StudentModel>.from(
-          map['students']?.map((x) => StudentModel.fromJson(x))),
-      lectures: List<LectureModel>.from(
-          map['lectures']?.map((x) => LectureModel.fromJson(x))),
-    );
-  }
-
-  void setAttendance(AttendanceModel attendance) {
-    int studentIndex =
-        students.indexWhere((element) => element.id == attendance.studentId);
-    if (studentIndex == -1) return;
-    students[studentIndex].setAttendance(attendance);
-  }
-
-  void removeAttendance(int studentId, int lecId) {
-    int studentIndex =
-        students.indexWhere((element) => element.id == studentId);
-    if (studentIndex == -1) return;
-    int? lecIndex = students[studentIndex]
-        .attendances
-        ?.indexWhere((element) => element.lecId == lecId);
-    if (lecIndex == -1 || lecIndex == null) return;
-    students[studentIndex].attendances?[lecIndex].removeAttend();
-  }
-}
-
-class StudentHomeworksResponse {
-  final bool status;
-  final List<StudentModel> students;
-  final List<LectureModel> lectures;
-
-  StudentHomeworksResponse(
-      {required this.status, required this.students, required this.lectures});
-
-  factory StudentHomeworksResponse.fromJson(Map<String, dynamic> map) {
-    return StudentHomeworksResponse(
-      status: map['status'] ?? false,
-      students: List<StudentModel>.from(
-          map['students']?.map((x) => StudentModel.fromJson(x))),
-      lectures: List<LectureModel>.from(
-          map['lectures']?.map((x) => LectureModel.fromJson(x))),
-    );
-  }
-  void setHomework(HomeworkModel homework) {
-    int studentIndex =
-        students.indexWhere((element) => element.id == homework.studentId);
-    if (studentIndex == -1) return;
-    students[studentIndex].setHomework(homework);
-  }
-}
-
-class StudentPaymentsResponse {
-  final bool status;
-  final List<StudentModel> students;
-  final List<PaymentsModel> payments;
-
-  StudentPaymentsResponse(
-      {required this.status, required this.students, required this.payments});
-
-  factory StudentPaymentsResponse.fromJson(Map<String, dynamic> map) {
-    return StudentPaymentsResponse(
-      status: map['status'] ?? false,
-      students: List<StudentModel>.from(
-          map['students']?.map((x) => StudentModel.fromJson(x))),
-      payments: List<PaymentsModel>.from(
-          map['payments']?.map((x) => PaymentsModel.fromJson(x))),
-    );
-  }
-  void setPayment(PaymentsModel payment) {
-    int studentIndex =
-        students.indexWhere((element) => element.id == payment.student_id);
-    if (studentIndex == -1) return;
-    students[studentIndex].setPayment(payment);
-  }
-}
 
 class StudentListResponseModel {
   final bool status;
@@ -185,10 +51,10 @@ class StudentModel {
 
   final String qr_code_url;
   final String stage;
-  final List<GradeModel>? grades;
-  final List<AttendanceModel>? attendances;
-  final List<HomeworkModel>? homeworks;
-  final List<PaymentsModel>? payments;
+  List<GradeModel>? grades;
+  List<AttendanceModel>? attendances;
+  List<HomeworkModel>? homeworks;
+  List<PaymentsModel>? payments;
 
   StudentModel({
     required this.id,

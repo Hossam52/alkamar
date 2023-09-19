@@ -22,12 +22,14 @@ class AttendanceTable extends StatefulWidget {
   final List<StudentModel> students;
   final List<LectureModel> lecs;
   final StageModel stage;
+  final int? totalStudents;
 
   const AttendanceTable(
       {super.key,
       required this.students,
       required this.lecs,
-      required this.stage});
+      required this.stage,
+      this.totalStudents});
 
   @override
   State<AttendanceTable> createState() => _AttendanceTableState();
@@ -36,13 +38,29 @@ class AttendanceTable extends StatefulWidget {
 class _AttendanceTableState extends State<AttendanceTable> {
   @override
   Widget build(BuildContext context) {
-    return AlkamarTable(
-      stage: widget.stage,
-      tableData: TableData(
-        hasCheckbox: true,
-        rows: _rows().toList(),
-        headers: _headers(context).toList(),
-      ),
+    return Column(
+      children: [
+        Expanded(
+          child: AlkamarTable(
+            stage: widget.stage,
+            tableData: TableData(
+              hasCheckbox: true,
+              rows: _rows().toList(),
+              headers: _headers(context).toList(),
+              totalItems: widget.totalStudents,
+            ),
+            loadMore: () {
+              StudentCubit.instance(context).getStudentAttendances();
+            },
+          ),
+        ),
+        // CustomButton(
+        //   text: 'التالي',
+        //   onPressed: () {
+        //     StudentCubit.instance(context).getStudentAttendances();
+        //   },
+        // )
+      ],
     );
   }
 
@@ -98,7 +116,7 @@ class _CustomAttendButton extends StatelessWidget {
       text: 'تحضير',
       onPressed: () async {
         final groupId = await showDialog<int?>(
-            context: context, builder: (_) => _SelectGroup());
+            context: context, builder: (_) => const _SelectGroup());
         if (groupId != null) {
           // ignore: use_build_context_synchronously
           await Methods.navigateTo(
@@ -128,7 +146,7 @@ class _CustomAttendButton extends StatelessWidget {
                                   studentId: studentid, groupId: groupId)));
                     },
                   )));
-          StudentCubit.instance(context).getStudentAttendances();
+          // StudentCubit.instance(context).getStudentAttendances();
         }
       },
     );
@@ -148,7 +166,7 @@ class _CustomAttendButton extends StatelessWidget {
 }
 
 class _SelectGroup extends StatefulWidget {
-  const _SelectGroup({super.key});
+  const _SelectGroup();
 
   @override
   State<_SelectGroup> createState() => _SelectGroupState();

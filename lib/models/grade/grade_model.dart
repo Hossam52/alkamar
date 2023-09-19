@@ -38,7 +38,7 @@ class GradeModel {
   factory GradeModel.fromJson(Map<String, dynamic> json) {
     return GradeModel(
       id: json['id'],
-      stageId: json['stage_id'],
+      stageId: json['stage_id'] ?? 0,
       title: json['title'],
       maxGrade: json['max_grade'],
       examDate: DateTime.parse(json['exam_date']),

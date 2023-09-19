@@ -19,6 +19,7 @@ import 'package:alqamar/widgets/default_loader.dart';
 
 class PaymentsTable extends StatefulWidget {
   final List<StudentModel> students;
+  final int? totalStudents;
   final List<PaymentsModel> payments;
   final StageModel stage;
 
@@ -26,7 +27,8 @@ class PaymentsTable extends StatefulWidget {
       {super.key,
       required this.students,
       required this.payments,
-      required this.stage});
+      required this.stage,
+      this.totalStudents});
 
   @override
   State<PaymentsTable> createState() => _PaymentsTableState();
@@ -38,9 +40,13 @@ class _PaymentsTableState extends State<PaymentsTable> {
     return AlkamarTable(
       stage: widget.stage,
       tableData: TableData(
+        totalItems: widget.totalStudents,
         rows: _studentRows(context),
         headers: _headers(context),
       ),
+      loadMore: () {
+        StudentCubit.instance(context).getStudentPayments();
+      },
     );
   }
 

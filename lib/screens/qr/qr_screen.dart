@@ -1,9 +1,12 @@
 import 'dart:developer';
 
 import 'package:alqamar/screens/qr/widgets/attend_manual_widget.dart';
+import 'package:alqamar/shared/presentation/resourses/color_manager.dart';
 import 'package:alqamar/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+
+import '../../shared/presentation/resourses/font_manager.dart';
 
 class QrScreen extends StatefulWidget {
   const QrScreen(
@@ -22,9 +25,11 @@ class QrScreen extends StatefulWidget {
   State<QrScreen> createState() => _QrScreenState();
 }
 
+enum _ActionEnum { manual, qr }
+
 class _QrScreenState extends State<QrScreen> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-
+  _ActionEnum? action = _ActionEnum.qr;
   Barcode? result;
 
   QRViewController? controller;
@@ -38,29 +43,62 @@ class _QrScreenState extends State<QrScreen> {
       ),
       body: Column(
         children: <Widget>[
-          Expanded(
-            flex: 5,
-            child: QRView(
-              key: qrKey,
-              overlay: QrScannerOverlayShape(
-                borderColor: Colors.red,
-                borderRadius: 10,
-              ),
-              onQRViewCreated: _onQRViewCreated,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _customListTile(_ActionEnum.qr, 'استخدام QR'),
+                ),
+                Expanded(
+                  child: _customListTile(_ActionEnum.manual, 'تحضير يدوي'),
+                )
+              ],
             ),
           ),
-          if (widget.showManual)
+          if (action == _ActionEnum.qr)
+            Expanded(
+              flex: 5,
+              child: QRView(
+                key: qrKey,
+                overlay: QrScannerOverlayShape(
+                  borderColor: Colors.red,
+                  borderRadius: 10,
+                ),
+                onQRViewCreated: _onQRViewCreated,
+              ),
+            ),
+          if (widget.showManual && action == _ActionEnum.manual)
             AttendManual(
               actionsWidget: widget.actionsWidget,
               onLoad: (val) async {
-                controller?.pauseCamera();
-
                 await widget.onManual(val);
-                controller?.resumeCamera();
               },
             )
         ],
       ),
+    );
+  }
+
+  RadioListTile<_ActionEnum> _customListTile(_ActionEnum val, String title,
+      {VoidCallback? onToggle}) {
+    return RadioListTile.adaptive(
+      title: TextWidget(
+        label: title,
+        fontSize: FontSize.s14,
+      ),
+      selectedTileColor: ColorManager.accentColor,
+      activeColor: ColorManager.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      selected: val == action,
+      value: val,
+      groupValue: action,
+      onChanged: (val) {
+        setState(() {
+          action = val;
+        });
+        if (onToggle != null) onToggle();
+      },
     );
   }
 

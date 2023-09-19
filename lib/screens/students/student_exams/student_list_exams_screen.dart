@@ -29,16 +29,19 @@ class _StudentListExamsState extends State<StudentListExams> {
           ),
           actions: [
             Builder(builder: (context) {
-              return CustomButton(
-                text: 'مجمع',
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (_) => BlocProvider.value(
-                            value: StudentCubit.instance(context),
-                            child: const CollectiveExamDialog(),
-                          ));
-                },
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CustomButton(
+                  text: 'مجمع',
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (_) => BlocProvider.value(
+                              value: StudentCubit.instance(context),
+                              child: const CollectiveExamDialog(),
+                            ));
+                  },
+                ),
               );
             })
           ],
@@ -50,6 +53,7 @@ class _StudentListExamsState extends State<StudentListExams> {
               builder: (context, state) {
                 final studentCubit = StudentCubit.instance(context);
                 final studentGrades = studentCubit.allStudentGrades;
+                final totalStudents = studentCubit.totalGradesStudents;
                 final exams = studentCubit.allExams;
                 if (state is GetStudentGradesLoadingState) {
                   return const Center(child: DefaultLoader());
@@ -66,6 +70,7 @@ class _StudentListExamsState extends State<StudentListExams> {
                   children: [
                     Expanded(
                       child: ExamGradesTable(
+                        totalStudents: totalStudents,
                         students: studentGrades,
                         exams: exams,
                         stage: widget.stage,

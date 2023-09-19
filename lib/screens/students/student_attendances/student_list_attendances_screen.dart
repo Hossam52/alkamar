@@ -37,6 +37,7 @@ class _StudentListAttendancesState extends State<StudentListAttendances> {
           final studentCubit = StudentCubit.instance(context);
           final attendances = studentCubit.allStudentAttendances;
           final lecs = studentCubit.allLectures;
+          final totalStudents = studentCubit.totalAttendanceStudents;
           return Scaffold(
             appBar: AppBar(
               title: const TextWidget(
@@ -69,6 +70,7 @@ class _StudentListAttendancesState extends State<StudentListAttendances> {
                             child: AttendanceTable(
                                 students: attendances,
                                 lecs: lecs,
+                                totalStudents: totalStudents,
                                 stage: widget.stage)),
                       ],
                     );

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:alqamar/shared/network/endpoints.dart';
 
 import '../../../constants/constants.dart';
@@ -100,12 +102,16 @@ class AppServices {
     }
   }
 
-  static Future<Map<String, dynamic>> listStudents(int stageId) async {
+  static Future<Map<String, dynamic>> listStudents(
+      int stageId, int page) async {
     try {
       final response = await AppDioHelper.postData(
         url: EndPoints.listStudents,
         token: Constants.token,
-        data: {'stage_id': stageId},
+        data: {
+          'stage_id': stageId,
+          'page': page,
+        },
       );
       return response.data;
     } catch (e) {
@@ -113,12 +119,16 @@ class AppServices {
     }
   }
 
-  static Future<Map<String, dynamic>> studentAttendances(int stageId) async {
+  static Future<Map<String, dynamic>> studentAttendances(
+      int stageId, int page) async {
     try {
       final response = await AppDioHelper.postData(
         url: EndPoints.studentAttendances,
         token: Constants.token,
-        data: {'stage_id': stageId},
+        data: {
+          'stage_id': stageId,
+          'page': max(page, 1),
+        },
       );
       return response.data;
     } catch (e) {
@@ -126,12 +136,13 @@ class AppServices {
     }
   }
 
-  static Future<Map<String, dynamic>> studentHomeworks(int stageId) async {
+  static Future<Map<String, dynamic>> studentHomeworks(
+      int stageId, int page) async {
     try {
       final response = await AppDioHelper.postData(
         url: EndPoints.studenthomeworks,
         token: Constants.token,
-        data: {'stage_id': stageId},
+        data: {'stage_id': stageId, 'page': max(page, 1)},
       );
       return response.data;
     } catch (e) {
@@ -139,12 +150,16 @@ class AppServices {
     }
   }
 
-  static Future<Map<String, dynamic>> studentPayments(int stageId) async {
+  static Future<Map<String, dynamic>> studentPayments(
+      int stageId, int page) async {
     try {
       final response = await AppDioHelper.postData(
         url: EndPoints.studentpayments,
         token: Constants.token,
-        data: {'stage_id': stageId},
+        data: {
+          'stage_id': stageId,
+          'page': max(page, 1),
+        },
       );
       return response.data;
     } catch (e) {

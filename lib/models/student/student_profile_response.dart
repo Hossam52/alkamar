@@ -1,6 +1,7 @@
 import 'package:alqamar/models/attendance/attendance_model.dart';
 import 'package:alqamar/models/grade/grade_model.dart';
 import 'package:alqamar/models/homework/homework_model.dart';
+import 'package:alqamar/models/homework_status_enum.dart';
 import 'package:alqamar/models/lecture/lecture_model.dart';
 import 'package:alqamar/models/student/student_model.dart';
 
@@ -47,9 +48,11 @@ class StudentProfileResponse {
         ? 'لا يوجد تأخير'
         : ('تأخر الطالب عدد (${attendance_late.length}) حصة وهي: \n') +
             attendance_late.map((e) => e.getContentReport()).join('\n');
+    final homeowrksWithoutDone = homeworks.where(
+        (element) => element.homeworkStatusEnum != HomeworkStatusEnum.done);
     String homeworkText = homeworks.isEmpty
         ? 'لا يوجد واجبات'
-        : homeworks.map((e) => e.getContentReport()).join('\n');
+        : 'منتظم في عمل الواجبات ${homeowrksWithoutDone.isEmpty ? '' : 'ماعدا:\n'} ${homeowrksWithoutDone.map((e) => e.getContentReport()).join('\n')}';
 
     String text = '''
 

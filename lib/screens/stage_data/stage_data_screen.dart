@@ -61,9 +61,8 @@ class _StageDataScreenState extends State<StageDataScreen> {
               }
               return GridView(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount:
-                        (MediaQuery.of(context).size.width * 0.006).toInt(),
-                    childAspectRatio: 2 / 2,
+                    crossAxisCount: 3,
+                    childAspectRatio: 3 / 4,
                     crossAxisSpacing: 10.w,
                     mainAxisSpacing: 10.w),
                 children: [
@@ -229,14 +228,14 @@ class _CustomItem extends StatelessWidget {
           children: [
             Icon(
               icon,
-              size: 50.h,
+              size: 40.h,
               color: ColorManager.white,
             ),
             Center(
                 child: TextWidget(
               textAlign: TextAlign.center,
               label: title,
-              fontSize: FontSize.s20,
+              fontSize: FontSize.s16,
               fontWeight: FontWeight.bold,
             )),
           ],

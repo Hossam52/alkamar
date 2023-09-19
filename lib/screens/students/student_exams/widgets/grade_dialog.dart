@@ -8,14 +8,22 @@ import 'package:alqamar/shared/presentation/resourses/color_manager.dart';
 import 'package:alqamar/shared/presentation/resourses/font_manager.dart';
 import 'package:alqamar/widgets/custom_button.dart';
 import 'package:alqamar/widgets/default_loader.dart';
+import 'package:alqamar/widgets/error_widget.dart';
 import 'package:alqamar/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:queen_validators/queen_validators.dart';
 
 class GradeDialog extends StatefulWidget {
   const GradeDialog(
-      {super.key, required this.student, required this.exam, this.grade});
-  final StudentModel student;
+      {super.key,
+      required this.student,
+      required this.exam,
+      this.grade,
+      this.studentCode,
+      this.studetnId});
+  final StudentModel? student;
+  final String? studentCode;
+  final String? studetnId;
   final ExamModel exam;
   final num? grade;
   @override
@@ -30,6 +38,10 @@ class GradeDialogState extends State<GradeDialog> {
   void initState() {
     controller = TextEditingController(
         text: widget.grade == null ? '' : widget.grade.toString());
+    if (widget.student == null) {
+      StudentCubit.instance(context)
+          .getStudentData(widget.studetnId, widget.studentCode);
+    }
     super.initState();
   }
 
@@ -41,87 +53,120 @@ class GradeDialogState extends State<GradeDialog> {
         backgroundColor: ColorManager.primary,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AuthTextField(
-                controller: controller,
-                label: 'الدرجة العظمي',
-                hint: '',
-                flex: 2,
-                textField: TextWidget(
-                  label: widget.exam.maxGrade.toString(),
-                  fontSize: FontSize.s14,
-                ),
-                validationRules: [],
-                inputType: TextInputType.number,
-              ),
-              AuthTextField(
-                controller: controller,
-                label: 'الامتحان',
-                hint: '',
-                flex: 2,
-                textField: TextWidget(
-                  label: widget.exam.title.toString(),
-                  fontSize: FontSize.s14,
-                ),
-                validationRules: [],
-                inputType: TextInputType.number,
-              ),
-              AuthTextField(
-                controller: controller,
-                label: 'الطالب',
-                hint: '',
-                flex: 2,
-                textField: TextWidget(
-                  label: widget.student.name.toString(),
-                  fontSize: FontSize.s14,
-                ),
-                validationRules: [],
-                inputType: TextInputType.number,
-              ),
-              AuthTextField(
-                controller: controller,
-                label: 'الدرجة',
-                hint: 'ادخل الدرجة',
-                validationRules: [
-                  IsNumber('يجب ان يتكون من ارقام فقط'),
-                  GradeValidator('يجب ان تكون الدرجة اقل من الدرجة العظمي',
-                      maxGrade: widget.exam.maxGrade),
-                  GradePostiveValidator('يجب ان تكون قيمة موجبه')
-                ],
-                inputType: TextInputType.number,
-              ),
-              StudentBlocConsumer(
-                listener: (context, state) {
-                  if (state is AddStudentGradeSuccessState) {
-                    Methods.showSuccessSnackBar(
-                        context, 'تم اضافة الدرجة بنجاح');
-                    Navigator.pop(context);
-                  }
-                  if (state is AddStudentGradeErrorState) {
-                    Methods.showSnackBar(context, state.error);
-                  }
-                },
-                builder: (context, state) {
-                  if (state is AddStudentGradeLoadingState) {
-                    return const DefaultLoader();
-                  }
-                  return CustomButton(
-                    text: 'تسجيل الدرجة',
+          child: StudentBlocBuilder(
+            builder: (context, state) {
+              final cubit = StudentCubit.instance(context);
+              if (widget.student == null &&
+                  widget.studentCode == null &&
+                  widget.studetnId == null) {
+                return CustomErrorWidget(onPressed: () {
+                  Navigator.pop(context);
+                });
+              }
+
+              late StudentModel student;
+              if (widget.student != null) {
+                student = widget.student!;
+              } else {
+                if (state is GetStudentDataLoadingState) {
+                  return const DefaultLoader();
+                }
+                if (state is GetStudentDataErrorState ||
+                    cubit.errorOnSearchedStudent) {
+                  return CustomErrorWidget(
                     onPressed: () {
-                      if (formKey.currentState!.validate()) {
-                        FocusScope.of(context).unfocus();
-                        StudentCubit.instance(context).addStudentGrade(
-                            widget.student.id,
-                            num.tryParse(controller.text) ?? 0,
-                            widget.exam);
-                      }
+                      cubit.getStudentData(
+                          widget.studetnId, widget.studentCode);
                     },
                   );
-                },
-              ),
-            ],
+                } else {
+                  student = StudentCubit.instance(context).searchedStudent!;
+                }
+              }
+
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AuthTextField(
+                    controller: controller,
+                    label: 'الدرجة العظمي',
+                    hint: '',
+                    flex: 2,
+                    textField: TextWidget(
+                      label: widget.exam.maxGrade.toString(),
+                      fontSize: FontSize.s14,
+                    ),
+                    validationRules: const [],
+                    inputType: TextInputType.number,
+                  ),
+                  AuthTextField(
+                    controller: controller,
+                    label: 'الامتحان',
+                    hint: '',
+                    flex: 2,
+                    textField: TextWidget(
+                      label: widget.exam.title.toString(),
+                      fontSize: FontSize.s14,
+                    ),
+                    validationRules: const [],
+                    inputType: TextInputType.number,
+                  ),
+                  AuthTextField(
+                    controller: controller,
+                    label: 'الطالب',
+                    hint: '',
+                    flex: 2,
+                    textField: TextWidget(
+                      label: student.name.toString(),
+                      fontSize: FontSize.s14,
+                    ),
+                    validationRules: const [],
+                    inputType: TextInputType.number,
+                  ),
+                  AuthTextField(
+                    controller: controller,
+                    label: 'الدرجة',
+                    hint: 'ادخل الدرجة',
+                    validationRules: [
+                      IsNumber('يجب ان يتكون من ارقام فقط'),
+                      GradeValidator('يجب ان تكون الدرجة اقل من الدرجة العظمي',
+                          maxGrade: widget.exam.maxGrade),
+                      GradePostiveValidator('يجب ان تكون قيمة موجبه')
+                    ],
+                    inputType: TextInputType.number,
+                  ),
+                  StudentBlocConsumer(
+                    listener: (context, state) {
+                      if (state is AddStudentGradeSuccessState) {
+                        Methods.showSuccessSnackBar(
+                            context, 'تم اضافة الدرجة بنجاح');
+                        Navigator.pop(context);
+                      }
+                      if (state is AddStudentGradeErrorState) {
+                        Methods.showSnackBar(context, state.error);
+                      }
+                    },
+                    builder: (context, state) {
+                      if (state is AddStudentGradeLoadingState) {
+                        return const DefaultLoader();
+                      }
+                      return CustomButton(
+                        text: 'تسجيل الدرجة',
+                        onPressed: () {
+                          if (formKey.currentState!.validate()) {
+                            FocusScope.of(context).unfocus();
+                            StudentCubit.instance(context).addStudentGrade(
+                                student.id,
+                                num.tryParse(controller.text) ?? 0,
+                                widget.exam);
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),

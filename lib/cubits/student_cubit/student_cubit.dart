@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:alqamar/models/attend_status_enum.dart';
 import 'package:alqamar/models/attendance/attendance_model.dart';
 import 'package:alqamar/models/exam/exam_model.dart';
@@ -9,6 +11,7 @@ import 'package:alqamar/models/payments/payments_model.dart';
 import 'package:alqamar/models/stage/stage_model.dart';
 import 'package:alqamar/models/student/student_model.dart';
 import 'package:alqamar/models/student/student_qrs_response.dart';
+import 'package:alqamar/models/student/students_paginate_model.dart';
 import 'package:alqamar/shared/network/services/app_services.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,6 +19,10 @@ import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../models/student/student_list_models/student_attendance_respnonse.dart';
+import '../../models/student/student_list_models/student_exam_result_respnonse.dart';
+import '../../models/student/student_list_models/student_homeworks_response.dart';
+import '../../models/student/student_payments_response.dart';
 import 'student_states.dart';
 
 //Bloc builder and bloc consumer methods
@@ -29,9 +36,20 @@ class StudentCubit extends Cubit<StudentStates> {
       BlocProvider.of<StudentCubit>(context);
   final StageModel? _stage;
   StageModel? get getStage => _stage;
+  bool get isLoadingMoreStudents => state is GetMoreStudentLoadingState;
+  int paginatedPage(StudentsPaginateModel? paginatedModel) {
+    if (paginatedModel == null) {
+      return 1;
+    } else {
+      return paginatedModel.page;
+    }
+  }
+
   //Exam results
   StudentExamResultRespnonse? _studentExamResultRespnonse;
   bool get hasLoadedExamRes => _studentExamResultRespnonse != null;
+  int? get totalGradesStudents =>
+      _studentExamResultRespnonse?.studentsPaginateModel.total_students;
   List<ExamModel> get allExams => _studentExamResultRespnonse?.exams ?? [];
   List<StudentModel> get allStudentGrades =>
       _studentExamResultRespnonse?.students ?? [];
@@ -39,9 +57,18 @@ class StudentCubit extends Cubit<StudentStates> {
     try {
       if (_stage == null) throw 'يجب اختيار المرحلة';
 
-      emit(GetStudentGradesLoadingState());
-      final res = await AppServices.listStudents(_stage!.id);
-      _studentExamResultRespnonse = StudentExamResultRespnonse.fromJson(res);
+      emit(_studentExamResultRespnonse != null
+          ? GetMoreStudentLoadingState()
+          : GetStudentGradesLoadingState());
+      final res = await AppServices.listStudents(_stage!.id,
+          paginatedPage(_studentExamResultRespnonse?.studentsPaginateModel));
+      final gradesRes = StudentExamResultRespnonse.fromJson(res);
+      if (_studentExamResultRespnonse == null) {
+        _studentExamResultRespnonse = gradesRes;
+      } else {
+        _studentExamResultRespnonse!.studentsPaginateModel
+            .appendStudents(gradesRes.studentsPaginateModel);
+      }
       emit(GetStudentGradesSuccessState());
     } catch (e) {
       emit(GetStudentGradesErrorState(error: e.toString()));
@@ -76,7 +103,7 @@ class StudentCubit extends Cubit<StudentStates> {
       _studentExamResultRespnonse?.students
           .firstWhere((element) => element.id == studentId)
           .grades
-          ?.firstWhere((element) => element.id == exam.id)
+          ?.firstWhere((element) => element.examId == exam.id)
           .setGrade(grade);
       emit(AddStudentGradeSuccessState());
     } catch (e) {
@@ -90,15 +117,28 @@ class StudentCubit extends Cubit<StudentStates> {
   bool get hasLoadedAttendancesRes => _studentAttendanceRespnonse != null;
   List<LectureModel> get allLectures =>
       _studentAttendanceRespnonse?.lectures ?? [];
+  int? get totalAttendanceStudents =>
+      _studentAttendanceRespnonse?.studentsPaginateModel.total_students;
   List<StudentModel> get allStudentAttendances =>
       _studentAttendanceRespnonse?.students ?? [];
-
   Future<void> getStudentAttendances() async {
+    final time = DateTime.now();
     try {
       if (_stage == null) throw 'يجب اختيار المرحلة';
-      emit(GetStudentAttendancesLoadingState());
-      final res = await AppServices.studentAttendances(_stage!.id);
-      _studentAttendanceRespnonse = StudentAttendanceRespnonse.fromJson(res);
+
+      _studentAttendanceRespnonse != null
+          ? emit(GetMoreStudentLoadingState())
+          : emit(GetStudentAttendancesLoadingState());
+      final res = await AppServices.studentAttendances(_stage!.id,
+          paginatedPage(_studentAttendanceRespnonse?.studentsPaginateModel));
+      final attendanceRes = StudentAttendanceRespnonse.fromJson(res);
+      // _studentAttendanceRespnonse = attendanceRes;
+      if (_studentAttendanceRespnonse == null) {
+        _studentAttendanceRespnonse = attendanceRes;
+      } else {
+        _studentAttendanceRespnonse!.appendStudents(attendanceRes);
+      }
+      log(DateTime.now().difference(time).inMilliseconds.toString());
       emit(GetStudentAttendancesSuccessState());
     } catch (e) {
       emit(GetStudentAttendancesErrorState(error: e.toString()));
@@ -138,6 +178,8 @@ class StudentCubit extends Cubit<StudentStates> {
   //Student homeworks
   StudentHomeworksResponse? _studentHomeworksResponse;
   bool get hasLoadedHomeworksRes => _studentHomeworksResponse != null;
+  int? get totalHomeworkStudents =>
+      _studentHomeworksResponse?.studentsPaginateModel.total_students;
   List<LectureModel> get allHomeworks =>
       _studentHomeworksResponse?.lectures ?? [];
   List<StudentModel> get allStudentHomeworks =>
@@ -146,9 +188,18 @@ class StudentCubit extends Cubit<StudentStates> {
   Future<void> getStudentHomeworks() async {
     try {
       if (_stage == null) throw 'يجب اختيار المرحلة';
-      emit(GetStudentHomeworksLoadingState());
-      final res = await AppServices.studentHomeworks(_stage!.id);
-      _studentHomeworksResponse = StudentHomeworksResponse.fromJson(res);
+      _studentHomeworksResponse != null
+          ? emit(GetMoreStudentLoadingState())
+          : emit(GetStudentHomeworksLoadingState());
+      final res = await AppServices.studentHomeworks(_stage!.id,
+          paginatedPage(_studentHomeworksResponse?.studentsPaginateModel));
+      final homeworks = StudentHomeworksResponse.fromJson(res);
+      if (_studentHomeworksResponse == null) {
+        _studentHomeworksResponse = homeworks;
+      } else {
+        _studentHomeworksResponse!.studentsPaginateModel
+            .appendStudents(homeworks.studentsPaginateModel);
+      }
       emit(GetStudentHomeworksSuccessState());
     } catch (e) {
       emit(GetStudentHomeworksErrorState(error: e.toString()));
@@ -180,6 +231,8 @@ class StudentCubit extends Cubit<StudentStates> {
   //Student homeworks
   StudentPaymentsResponse? _studentPaymentsResponse;
   bool get hasLoadedPaymentsRes => _studentPaymentsResponse != null;
+  int? get totalPaymentStudents =>
+      _studentPaymentsResponse?.studentsPaginateModel.total_students;
   List<PaymentsModel> get allPayments =>
       _studentPaymentsResponse?.payments ?? [];
   List<StudentModel> get allStudentPayments =>
@@ -188,9 +241,18 @@ class StudentCubit extends Cubit<StudentStates> {
   Future<void> getStudentPayments() async {
     try {
       if (_stage == null) throw 'يجب اختيار المرحلة';
-      emit(GetStudentPaymentsLoadingState());
-      final res = await AppServices.studentPayments(_stage!.id);
-      _studentPaymentsResponse = StudentPaymentsResponse.fromJson(res);
+      _studentPaymentsResponse != null
+          ? emit(GetMoreStudentLoadingState())
+          : emit(GetStudentPaymentsLoadingState());
+      final res = await AppServices.studentPayments(_stage!.id,
+          paginatedPage(_studentPaymentsResponse?.studentsPaginateModel));
+      final paymentRes = StudentPaymentsResponse.fromJson(res);
+      if (_studentPaymentsResponse == null) {
+        _studentPaymentsResponse = paymentRes;
+      } else {
+        _studentPaymentsResponse!.studentsPaginateModel
+            .appendStudents(paymentRes.studentsPaginateModel);
+      }
       emit(GetStudentPaymentsSuccessState());
     } catch (e) {
       emit(GetStudentPaymentsErrorState(error: e.toString()));

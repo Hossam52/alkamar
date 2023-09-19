@@ -22,11 +22,19 @@ class RowItem {
 }
 
 class CustomTableDefinition extends StatelessWidget {
-  const CustomTableDefinition({super.key, required this.tableDefinition});
+  const CustomTableDefinition(
+      {super.key, required this.tableDefinition, this.columnSizes});
   final TableDefinition tableDefinition;
+  final Map<int, double>? columnSizes;
 
   @override
   Widget build(BuildContext context) {
+    final mapColumnSizes =
+        columnSizes?.map<int, TableColumnWidth>((key, value) {
+      final MapEntry<int, TableColumnWidth> map =
+          MapEntry(key, FixedColumnWidth(value));
+      return map;
+    });
     final x = tableDefinition.rows.map((row) {
       if (row.cells.length > tableDefinition.headers.length) {
         row.cells = row.cells.take(tableDefinition.headers.length).toList();
@@ -44,7 +52,7 @@ class CustomTableDefinition extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Table(children: [
+        Table(columnWidths: mapColumnSizes, children: [
           TableRow(
             decoration:
                 BoxDecoration(color: ColorManager.accentColor.withOpacity(0.7)),
@@ -55,6 +63,7 @@ class CustomTableDefinition extends StatelessWidget {
         ]),
         ...x.map((e) {
           return Table(
+            columnWidths: mapColumnSizes,
             children: e,
           );
         }).toList()
