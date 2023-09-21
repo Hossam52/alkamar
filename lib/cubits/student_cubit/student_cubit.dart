@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:alqamar/models/attend_status_enum.dart';
 import 'package:alqamar/models/attendance/attendance_model.dart';
 import 'package:alqamar/models/exam/exam_model.dart';
+import 'package:alqamar/models/grade/grade_model.dart';
 import 'package:alqamar/models/homework/homework_model.dart';
 import 'package:alqamar/models/homework_status_enum.dart';
 import 'package:alqamar/models/lecture/lecture_model.dart';
@@ -98,13 +99,16 @@ class StudentCubit extends Cubit<StudentStates> {
   Future<void> addStudentGrade(int studentId, num grade, ExamModel exam) async {
     try {
       emit(AddStudentGradeLoadingState());
-      await AppServices.storeGrade(
+      final res = await AppServices.storeGrade(
           examId: exam.id, grade: grade, studentId: studentId);
-      _studentExamResultRespnonse?.students
-          .firstWhere((element) => element.id == studentId)
-          .grades
-          ?.firstWhere((element) => element.examId == exam.id)
-          .setGrade(grade);
+      final gradeModel = GradeModel.fromJson(res['grade']);
+      _studentExamResultRespnonse?.setGrade(gradeModel);
+
+      // students
+      //     .firstWhere((element) => element.id == studentId)
+      //     .grades
+      //     ?.firstWhere((element) => element.examId == exam.id)
+      //     .setGrade(grade);
       emit(AddStudentGradeSuccessState());
     } catch (e) {
       emit(AddStudentGradeErrorState(error: e.toString()));

@@ -1,3 +1,4 @@
+import 'package:alqamar/models/exam/exam_model.dart';
 import 'package:alqamar/shared/methods.dart';
 import 'package:alqamar/shared/presentation/resourses/color_manager.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,16 @@ class GradeModel {
     this.examId,
     this.withoutInteract = false,
   });
+  factory GradeModel.fromExam(ExamModel exam) {
+    return GradeModel(
+      id: exam.id,
+      stageId: exam.stageId,
+      title: exam.title,
+      maxGrade: exam.maxGrade,
+      examDate: exam.date,
+      examId: exam.id,
+    );
+  }
   GradeModel.empty()
       : id = 0,
         title = '',

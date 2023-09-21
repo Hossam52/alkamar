@@ -1,4 +1,4 @@
-total= 32 + 3 + 1 + 1 + 3.5 + 2 + 1 +6 +14 +2 +4 +1 +1 +6+5 +2 +2 +2 +4 +2 +4 +5 +1 +2 + 4 + 1= 111
+total= 32 + 3 + 1 + 1 + 3.5 + 2 + 1 +6 +14 +2 +4 +1 +1 +6+5 +2 +2 +2 +4 +2 +4 +5 +1 +2 + 4 + 1 +11 = 122
 create backend server 32h
 
 make auth in mobile 3h
@@ -41,6 +41,13 @@ student exam results 6h
 - add section in home for the highlevel for the secondary 
 - move students from any group to another(done)
 
+20/9
+    - separate payment,homework,examgrades and student attendances in separate resources 3h
+    - add pagination in all lists 4h
+    - add total students in all lists 1h
+    - make group while attend students (a/b/c/d) 2h
+    - add homework when attend student 1h
+
 
 backend
 - add group table,model,controller and resource(done)4h
@@ -50,16 +57,18 @@ backend
 - modify lecture stats to be suitable for groups (can select any group to view)(done)
 - attend student by qr when the std not in the group (either attend in his group radio button or attend his in another group)
 
+
+
+
+
+
+
+// Future features
 - fix arabic in qr
 - add admin previlages 
 - add assistant previlages (can add student/exam/lecture , can attend studetns and can put grades)
 - add personal picture
-- make group while attend students (a/b/c/d)
 - remove register from login
 
-//not working in android 12(realme) 11(oppo)
-separate payment,homework,examgrades and student attendances in separate resources
-add pagination in all lists
-add total students in all lists 
 
 

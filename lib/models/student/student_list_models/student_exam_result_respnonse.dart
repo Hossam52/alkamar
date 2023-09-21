@@ -29,13 +29,7 @@ class StudentExamResultRespnonse {
           final res =
               grades.where((grade) => grade.examId == exam.id).firstOrNull;
           if (res == null) {
-            final grade = GradeModel(
-              id: exam.id,
-              stageId: exam.stageId,
-              title: exam.title,
-              maxGrade: exam.maxGrade,
-              examDate: exam.date,
-            );
+            final grade = GradeModel.fromExam(exam);
             allGrades.add(grade);
           } else {
             allGrades.add(res);
@@ -44,6 +38,13 @@ class StudentExamResultRespnonse {
       }
       std.grades = allGrades;
     }
+  }
+
+  void setGrade(GradeModel grade) {
+    int studentIndex =
+        students.indexWhere((element) => element.id == grade.studentId);
+    if (studentIndex == -1) return;
+    students[studentIndex].setGrade(grade);
   }
 
   //For append collective exams

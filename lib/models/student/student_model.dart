@@ -156,6 +156,13 @@ class StudentModel {
     homeworks![homeworkIndex].lecId = homework.lecId;
   }
 
+  void setGrade(GradeModel grade) {
+    final gradeIndex =
+        grades?.indexWhere((element) => element.examId == grade.examId) ?? -1;
+    if (gradeIndex == -1) return;
+    grades?[gradeIndex] = grade;
+  }
+
   void setPayment(PaymentsModel payment) {
     final paymentIndex =
         payments?.indexWhere((element) => element.id == payment.payment_id) ??
