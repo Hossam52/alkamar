@@ -288,7 +288,7 @@ class AppServices {
   }
 
   static Future<Map<String, dynamic>> getExamStats(int examId,
-      {String? division}) async {
+      {String? division, int? groupId}) async {
     try {
       final response = await AppDioHelper.getData(
           url: EndPoints.examStats,
@@ -296,6 +296,7 @@ class AppServices {
           query: {
             'exam_id': examId,
             'division': division,
+            'group_id': groupId,
           });
       return response.data;
     } catch (e) {
@@ -392,6 +393,7 @@ class AppServices {
   // Grades endpoints
   static Future<Map<String, dynamic>> storeGrade({
     required int studentId,
+    required int? groupId,
     required int examId,
     required num grade,
   }) async {
@@ -401,6 +403,7 @@ class AppServices {
         token: Constants.token,
         data: {
           'student_id': studentId,
+          'group_id': groupId,
           'exam_id': examId,
           'grade': grade,
         },

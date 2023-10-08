@@ -9,6 +9,7 @@ import 'package:alqamar/shared/presentation/resourses/font_manager.dart';
 import 'package:alqamar/widgets/custom_button.dart';
 import 'package:alqamar/widgets/default_loader.dart';
 import 'package:alqamar/widgets/error_widget.dart';
+import 'package:alqamar/widgets/groups_drop_down_widget.dart';
 import 'package:alqamar/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -142,7 +143,7 @@ class _LectureStatsScreenState extends State<LectureStatsScreen> {
       controller: TextEditingController(text: value),
       label: key,
       hint: '',
-      validationRules: [],
+      validationRules: const [],
       enabled: false,
     );
   }
@@ -167,29 +168,15 @@ class _GroupSelectionState extends State<_GroupSelection> {
 
   @override
   Widget build(BuildContext context) {
-    final groups = StageCubit.instance(context).groups;
-
     return Row(
       children: [
         Expanded(
-          child: AuthTextField.customTextField(
-              controller: TextEditingController(),
-              label: 'المجموعة',
-              textField: DropdownButtonFormField<int?>(
-                  dropdownColor: ColorManager.primary,
-                  value: groupId,
-                  items: groups
-                      .map((e) => DropdownMenuItem(
-                          value: e.id,
-                          child: TextWidget(
-                            label: e.title,
-                          )))
-                      .toList(),
-                  onChanged: (item) {
-                    setState(() {
-                      groupId = item;
-                    });
-                  })),
+          child: GroupsDropDownWidget(
+            selectedGroupId: widget.selectedGroupId,
+            onChangeSelection: (groupId) {
+              this.groupId = groupId;
+            },
+          ),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -296,7 +283,7 @@ class _UpdateLectureState extends State<_UpdateLecture> {
                     flex: 3,
                     label: 'اسم المحاضرة',
                     hint: "ادخل اسم المحاضرة",
-                    validationRules: []),
+                    validationRules: const []),
                 AuthTextField(
                     controller: lectureTitle,
                     flex: 3,

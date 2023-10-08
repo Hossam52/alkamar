@@ -1,6 +1,7 @@
 import 'package:alqamar/cubits/student_cubit/student_cubit.dart';
 import 'package:alqamar/cubits/student_cubit/student_states.dart';
 import 'package:alqamar/models/exam/exam_model.dart';
+import 'package:alqamar/models/grade/grade_model.dart';
 import 'package:alqamar/models/student/student_model.dart';
 import 'package:alqamar/screens/auth/widgets/auth_text_field.dart';
 import 'package:alqamar/shared/methods.dart';
@@ -9,6 +10,7 @@ import 'package:alqamar/shared/presentation/resourses/font_manager.dart';
 import 'package:alqamar/widgets/custom_button.dart';
 import 'package:alqamar/widgets/default_loader.dart';
 import 'package:alqamar/widgets/error_widget.dart';
+import 'package:alqamar/widgets/student_group_widget.dart';
 import 'package:alqamar/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:queen_validators/queen_validators.dart';
@@ -25,7 +27,7 @@ class GradeDialog extends StatefulWidget {
   final String? studentCode;
   final String? studetnId;
   final ExamModel exam;
-  final num? grade;
+  final GradeModel? grade;
   @override
   State<GradeDialog> createState() => GradeDialogState();
 }
@@ -37,13 +39,17 @@ class GradeDialogState extends State<GradeDialog> {
   @override
   void initState() {
     controller = TextEditingController(
-        text: widget.grade == null ? '' : widget.grade.toString());
+        text:
+            widget.grade?.grade == null ? '' : widget.grade?.grade.toString());
     if (widget.student == null) {
       StudentCubit.instance(context)
           .getStudentData(widget.studetnId, widget.studentCode);
     }
+    selectedGroupId = widget.grade?.groupId;
     super.initState();
   }
+
+  int? selectedGroupId;
 
   @override
   Widget build(BuildContext context) {
@@ -123,6 +129,11 @@ class GradeDialogState extends State<GradeDialog> {
                     validationRules: const [],
                     inputType: TextInputType.number,
                   ),
+                  StudentGroupWidget(
+                      groupId: selectedGroupId,
+                      onChangeGroup: (groupId) {
+                        selectedGroupId = groupId;
+                      }),
                   AuthTextField(
                     controller: controller,
                     label: 'الدرجة',
@@ -153,10 +164,16 @@ class GradeDialogState extends State<GradeDialog> {
                       return CustomButton(
                         text: 'تسجيل الدرجة',
                         onPressed: () {
+                          if (selectedGroupId == null) {
+                            Methods.showSnackBar(
+                                context, 'يجب اختيار الجروب اولا');
+                            return;
+                          }
                           if (formKey.currentState!.validate()) {
                             FocusScope.of(context).unfocus();
                             StudentCubit.instance(context).addStudentGrade(
                                 student.id,
+                                selectedGroupId,
                                 num.tryParse(controller.text) ?? 0,
                                 widget.exam);
                           }

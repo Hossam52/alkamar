@@ -21,11 +21,11 @@ class ExamCubit extends Cubit<ExamStates> {
   List<ExamStatsModel> get examStatistics => _examStats?.stats ?? [];
   int get examAbsenceCount => _examStats?.examAbsenceCount ?? 0;
   int get examTotalStudentsCount => _examStats?.total_students_count ?? 0;
-  Future<void> getExamStatistics({String? division}) async {
+  Future<void> getExamStatistics({String? division, int? groupId}) async {
     try {
       emit(GetExamStatisticsLoadingState());
-      final response =
-          await AppServices.getExamStats(exam.id, division: division);
+      final response = await AppServices.getExamStats(exam.id,
+          division: division, groupId: groupId);
       _examStats = ExamStatisticesResponse.fromMap(response);
       emit(GetExamStatisticsSuccessState());
     } catch (e) {

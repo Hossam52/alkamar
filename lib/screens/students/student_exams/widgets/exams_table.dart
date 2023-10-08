@@ -1,5 +1,6 @@
 import 'package:alqamar/cubits/student_cubit/student_cubit.dart';
 import 'package:alqamar/models/exam/exam_model.dart';
+import 'package:alqamar/models/grade/grade_model.dart';
 import 'package:alqamar/models/stage/stage_model.dart';
 import 'package:alqamar/models/student/student_model.dart';
 import 'package:alqamar/screens/qr/qr_screen.dart';
@@ -54,7 +55,7 @@ class _ExamGradesTableState extends State<ExamGradesTable> {
                                 final exam = widget.exams[index];
 
                                 _confirm(context, exam,
-                                    student: student, grade: grade.grade);
+                                    student: student, grade: grade);
                               } catch (e) {
                                 rethrow;
                               }
@@ -101,7 +102,7 @@ class _ExamGradesTableState extends State<ExamGradesTable> {
   }
 
   Future<dynamic> _confirm(BuildContext context, ExamModel exam,
-      {num? grade,
+      {GradeModel? grade,
       StudentModel? student,
       String? studentId,
       String? studentCode}) {

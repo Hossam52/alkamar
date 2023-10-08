@@ -11,6 +11,7 @@ import 'package:alqamar/widgets/custom_button.dart';
 import 'package:alqamar/widgets/custom_table_defination_widget.dart';
 import 'package:alqamar/widgets/default_loader.dart';
 import 'package:alqamar/widgets/error_widget.dart';
+import 'package:alqamar/widgets/groups_drop_down_widget.dart';
 import 'package:alqamar/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -60,6 +61,7 @@ class ExamStatsScreen extends StatelessWidget {
               child: ListView(
                 children: [
                   _ExamDetails(exam: exam),
+                  _StatsButton(cubit: ExamCubit.instance(context)),
                   Builder(
                     builder: (context) {
                       final cubit = ExamCubit.instance(context);
@@ -77,7 +79,6 @@ class ExamStatsScreen extends StatelessWidget {
                           cubit.examTotalStudentsCount;
                       return Column(
                         children: [
-                          _StatsButton(cubit: cubit),
                           _ExamStatsTable(
                               stats: stats,
                               examAbsenceCount: examAbsenceCount,
@@ -277,32 +278,78 @@ class _StatsButton extends StatefulWidget {
 class _StatsButtonState extends State<_StatsButton> {
   final formKey = GlobalKey<FormState>();
   final controller = TextEditingController();
+
+  int? lastSelectedGroupId;
+  int? selectedGroupId;
+  bool isAllSelected = true;
   @override
   Widget build(BuildContext context) {
     return Form(
       key: formKey,
-      child: Row(
+      child: Column(
         children: [
-          Expanded(
-            flex: 2,
-            child: AuthTextField(
-                controller: controller,
-                label: 'التقسيم',
-                hint: 'ادخل التقسيم',
-                validationRules: [IsNumber('ادخل رقم صحيح')],
-                inputType: TextInputType.number,
-                focus: false),
+          Column(
+            children: [
+              AuthTextField(
+                  controller: controller,
+                  label: 'التقسيم',
+                  hint: 'ادخل التقسيم',
+                  validationRules: [IsNumber('ادخل رقم صحيح')],
+                  inputType: TextInputType.number,
+                  focus: false),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 5,
+                    child: Opacity(
+                      opacity: !isAllSelected ? 1 : 0.3,
+                      child: AbsorbPointer(
+                        absorbing: isAllSelected,
+                        child: GroupsDropDownWidget(
+                          selectedGroupId: selectedGroupId,
+                          onChangeSelection: (groupId) {
+                            lastSelectedGroupId = selectedGroupId;
+                            selectedGroupId = groupId;
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 14.h,
+                  ),
+                  SizedBox(
+                    width: 100.w,
+                    child: CheckboxListTile(
+                      value: isAllSelected,
+                      onChanged: (val) {
+                        if (val != null && val) {
+                          lastSelectedGroupId = selectedGroupId;
+                          selectedGroupId = null;
+                        } else {
+                          print(lastSelectedGroupId);
+                          selectedGroupId = lastSelectedGroupId;
+                        }
+                        setState(() {
+                          isAllSelected = !isAllSelected;
+                        });
+                      },
+                      title: const TextWidget(label: 'الكل'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
           SizedBox(width: 10.w),
-          Expanded(
-            child: CustomButton(
-              text: 'اظهر الاحصائيات',
-              onPressed: () {
-                if (formKey.currentState!.validate()) {
-                  widget.cubit.getExamStatistics(division: controller.text);
-                }
-              },
-            ),
+          CustomButton(
+            text: 'اظهر الاحصائيات',
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                widget.cubit.getExamStatistics(
+                    division: controller.text, groupId: selectedGroupId);
+              }
+            },
           ),
         ],
       ),
@@ -332,14 +379,14 @@ class _ExamStatsTable extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 fontSize: FontSize.s18),
           ),
-          AuthTextField(
-            controller:
-                TextEditingController(text: examAbsenceCount.toString()),
-            label: 'عدد المتغيبين',
-            hint: '',
-            validationRules: const [],
-            enabled: false,
-          ),
+          // AuthTextField(
+          //   controller:
+          //       TextEditingController(text: examAbsenceCount.toString()),
+          //   label: 'عدد المتغيبين',
+          //   hint: '',
+          //   validationRules: const [],
+          //   enabled: false,
+          // ),
           Table(
             border: TableBorder.all(color: ColorManager.accentColor),
             children: [

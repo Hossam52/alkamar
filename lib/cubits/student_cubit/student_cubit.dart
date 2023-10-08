@@ -96,11 +96,15 @@ class StudentCubit extends Cubit<StudentStates> {
     }
   }
 
-  Future<void> addStudentGrade(int studentId, num grade, ExamModel exam) async {
+  Future<void> addStudentGrade(
+      int studentId, int? groupId, num grade, ExamModel exam) async {
     try {
       emit(AddStudentGradeLoadingState());
       final res = await AppServices.storeGrade(
-          examId: exam.id, grade: grade, studentId: studentId);
+          examId: exam.id,
+          grade: grade,
+          studentId: studentId,
+          groupId: groupId);
       final gradeModel = GradeModel.fromJson(res['grade']);
       _studentExamResultRespnonse?.setGrade(gradeModel);
 

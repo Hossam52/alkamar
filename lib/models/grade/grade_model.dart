@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class GradeModel {
   int id;
   int stageId;
+  int? groupId;
   String title;
   int maxGrade;
   DateTime examDate;
@@ -22,6 +23,7 @@ class GradeModel {
     required this.title,
     required this.maxGrade,
     required this.examDate,
+    this.groupId,
     this.gradeId,
     this.studentId,
     this.grade,
@@ -50,6 +52,7 @@ class GradeModel {
     return GradeModel(
       id: json['id'],
       stageId: json['stage_id'] ?? 0,
+      groupId: json['group_id'],
       title: json['title'],
       maxGrade: json['max_grade'],
       examDate: DateTime.parse(json['exam_date']),
