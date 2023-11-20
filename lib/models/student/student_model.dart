@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:alqamar/models/attend_status_enum.dart';
 import 'package:alqamar/models/attendance/attendance_model.dart';
 import 'package:alqamar/models/exam/exam_model.dart';
 import 'package:alqamar/models/grade/grade_model.dart';
@@ -44,13 +47,16 @@ class StudentModel {
   final StudentStatus studentStatusEnum;
   final String qrCodePath;
   final String created_at;
-  final PaymentsModel? last_payment;
+  final PaymentsModel? last_month_payment;
+  final PaymentsModel? current_month_payment;
+  // final List<PaymentsModel>? last_paymets;
   final int? group_id;
   final String? group_title;
   DateTime createdDate;
 
   final String qr_code_url;
   final String stage;
+  AttendanceModel? last_attendance;
   List<GradeModel>? grades;
   List<AttendanceModel>? attendances;
   List<HomeworkModel>? homeworks;
@@ -74,10 +80,13 @@ class StudentModel {
     required this.qr_code_url,
     required this.created_at,
     required this.stage,
-    required this.last_payment,
+    required this.last_month_payment,
+    required this.current_month_payment,
+    // required this.last_paymets,
     this.group_id,
     this.group_title,
     this.grades,
+    this.last_attendance,
     this.attendances,
     this.homeworks,
     this.payments,
@@ -114,6 +123,13 @@ class StudentModel {
           .map((payment) => PaymentsModel.fromJson(payment))
           .toList();
     }
+    // List<PaymentsModel>? lastPayments;
+    // var lastPaymentsList = json['last_payments'] as List<dynamic>?;
+    // if (lastPaymentsList != null) {
+    //   lastPayments = lastPaymentsList
+    //       .map((payment) => PaymentsModel.fromJson(payment))
+    //       .toList();
+    // }
 
     return StudentModel(
       id: json['id'],
@@ -133,13 +149,20 @@ class StudentModel {
       created_at: json['created_at'],
       qr_code_url: json['qr_code_url'],
       stage: json['stage'] ?? '',
+      last_month_payment: json['last_month_payment'] == null
+          ? null
+          : PaymentsModel.fromJson(json['last_month_payment']),
+      current_month_payment: json['current_month_payment'] == null
+          ? null
+          : PaymentsModel.fromJson(json['current_month_payment']),
+      last_attendance: json['last_attendance'] == null
+          ? null
+          : AttendanceModel.fromJson(json['last_attendance']),
       grades: grades,
       attendances: attendances,
       homeworks: homeworks,
       payments: payments,
-      last_payment: json['last_payment'] == null
-          ? null
-          : PaymentsModel.fromJson(json['last_payment']),
+      // last_paymets: lastPayments,
       group_id: json['group_id'],
       group_title: json['group_title'],
     );
@@ -216,13 +239,32 @@ class StudentModel {
         studentId: id));
   }
 
-  String get paymentTitle {
-    String? title = last_payment?.title;
+  String get currentPaymentTitle {
+    String? title = current_month_payment?.title;
     if (title != null) {
-      title += ' (${last_payment!.paymentStatus.title})';
+      title += ' (${current_month_payment!.paymentStatus.title})';
     } else {
       return 'لم يسجل';
     }
     return title;
+  }
+
+  String get lastPaymentTitle {
+    if (last_month_payment == null) return 'لم يدفع';
+    return last_month_payment!.paymentStatus.title;
+  }
+  // String get paymentTitle {
+  //   log(last_paymets.toString());
+  //   String? title = last_paymets?.map((e) => '( ${e.title} )').join(' - ');
+  //   if (title == null || (last_paymets != null && last_paymets!.isEmpty)) {
+  //     return 'لم يسجل ';
+  //   }
+
+  //   return title;
+  // }
+
+  String get lastAttendanceTitle {
+    if (last_attendance == null) return 'غائب';
+    return last_attendance!.attendStatusEnum.getAttendanceText;
   }
 }

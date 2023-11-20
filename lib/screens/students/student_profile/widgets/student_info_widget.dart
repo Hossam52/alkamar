@@ -37,8 +37,8 @@ class StudentInformation extends StatelessWidget {
           _studentField('مشاكل الطالب', student.problems),
           _studentField(
             'الحالة من المصاريف',
-            student.paymentTitle,
-            backgroundColor: student.last_payment?.paymentStatus.color,
+            student.currentPaymentTitle,
+            backgroundColor: student.current_month_payment?.paymentStatus.color,
           ),
           _studentField('حالة الطالب', student.studentStatusText),
         ],

@@ -1,5 +1,6 @@
 import 'package:alqamar/cubits/student_cubit/student_cubit.dart';
 import 'package:alqamar/cubits/student_cubit/student_states.dart';
+import 'package:alqamar/models/attend_status_enum.dart';
 import 'package:alqamar/shared/methods.dart';
 import 'package:alqamar/shared/presentation/resourses/color_manager.dart';
 import 'package:alqamar/shared/presentation/resourses/font_manager.dart';
@@ -87,14 +88,18 @@ class ConfirmAttendDialogState extends State<ConfirmAttendDialog> {
                     fontWeight: FontWeight.bold,
                   ),
                   const Divider(),
-                  Container(
-                    color: cubit.searchedStudent != null
-                        ? cubit.searchedStudent?.last_payment?.paymentStatus
-                                .color ??
-                            ColorManager.primary
-                        : ColorManager.primary,
-                    child: _rowItem('المصروفات: ', student.paymentTitle),
-                  ),
+                  _rowItem(
+                      'مصروفات الشهر الحالي: ', student.currentPaymentTitle,
+                      fontSize: 16.sp,
+                      color:
+                          student.current_month_payment?.paymentStatus.color),
+                  _rowItem('مصروفات اخر شهر: ', student.lastPaymentTitle,
+                      fontSize: 16.sp,
+                      color: student.last_month_payment?.paymentStatus.color),
+                  _rowItem('حالة اخر حصة: ', student.lastAttendanceTitle,
+                      fontSize: 16.sp,
+                      color: student.last_attendance?.attendStatusEnum
+                          .getAttendanceColor),
                   _rowItem('اسم الطالب: ', student.name),
                   _rowItem('الكود: ', student.code),
                   _rowItem('المجموعة: ',
@@ -115,12 +120,23 @@ class ConfirmAttendDialogState extends State<ConfirmAttendDialog> {
     );
   }
 
-  Row _rowItem(String key, String val) {
-    return Row(
-      children: [
-        TextWidget(label: key),
-        TextWidget(label: val),
-      ],
+  Widget _rowItem(String key, String val, {double? fontSize, Color? color}) {
+    return Container(
+      color: color,
+      margin: EdgeInsets.symmetric(vertical: 4.h),
+      child: Row(
+        children: [
+          TextWidget(
+            label: key,
+            fontSize: fontSize,
+            fontWeight: FontWeight.w900,
+          ),
+          TextWidget(
+            label: val,
+            fontSize: fontSize,
+          ),
+        ],
+      ),
     );
   }
 }
