@@ -58,15 +58,26 @@ class StudentInformation extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: CustomButton(
               text: 'ارسال',
-              onPressed: () {
+              onPressed: () async {
                 if (student.student_status == false) {
                   Methods.showSnackBar(
                       context, 'هذا الطالب متوقف لا يمكنك ارسال الرسالة');
                   return;
                 }
+                final range = await showDateRangePicker(
+                    context: context,
+                    firstDate:
+                        DateTime.now().subtract(const Duration(days: 365)),
+                    lastDate: DateTime.now());
+                if (range == null) {
+                  // ignore: use_build_context_synchronously
+                  Methods.showSnackBar(context, 'يجب اختيار قيم صحيحة');
+                  return;
+                }
                 launchWhatsapp(
                   phone,
-                  StudentProfileCubit.instance(context).whtasappContent,
+                  StudentProfileCubit.instance(context)
+                      .whtasappContent(range.start, range.end),
                 );
               },
             ),

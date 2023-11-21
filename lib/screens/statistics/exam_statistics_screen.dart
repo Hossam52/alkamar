@@ -478,8 +478,8 @@ class _GradeStudents extends StatelessWidget {
                         Methods.navigateTo(
                             context,
                             StudentProfileScreen(
-                                studentId: student.student.id,
-                                stageModel: null));
+                              studentId: student.student.id,
+                            ));
                       },
                       cells: [
                         (index + 1).toString(),

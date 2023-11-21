@@ -40,6 +40,7 @@ class StudentPaymentsResponse {
               year: payment.year,
               payment_status: null,
               student_id: null,
+              created_at: null,
             );
 
             allPayments.add(pay);

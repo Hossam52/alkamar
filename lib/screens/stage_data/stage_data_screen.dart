@@ -174,8 +174,8 @@ class _StageDataScreenState extends State<StageDataScreen> {
                             await Methods.navigateTo(
                                 context,
                                 StudentProfileScreen(
-                                    studentId: int.parse(val),
-                                    stageModel: null));
+                                  studentId: int.parse(val),
+                                ));
                           },
                           actionsWidget: Container(),
                         ),

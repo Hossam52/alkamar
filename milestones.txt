@@ -47,7 +47,10 @@ student exam results 6h
     - add total students in all lists 1h
     - make group while attend students (a/b/c/d) 2h
     - add homework when attend student 1h
-
+21/11
+- remove register from login
+- in payments add date that the student paid 1h
+- in send dat via what determine duration from and to
 
 backend
 - add group table,model,controller and resource(done)4h
@@ -64,11 +67,57 @@ backend
 
 
 // Future features
-- fix arabic in qr
+
+
 - add admin previlages 
-- add assistant previlages (can add student/exam/lecture , can attend studetns and can put grades)
+    - add admin accounts that able to see all things.
+- add assistant previlages
+    - Assistants
+        - add new assistant
+    
+    - Student 
+        - add 
+        - update
+    
+    - Exam
+        - add new  
+        - delete exam
+        - update exam
+    -Grades
+        - view grades
+        - grade students
+
+    - Lecture
+        - add new 
+        - update lec
+        - delete lec
+    -Attendance
+        - view attendances
+        - attend students
+        - update attendance
+        - delete attendance    
+
+    - Payment
+        - add new payment
+    - masrofat
+        - view masrofat
+        - mark students as paid
+
 - add personal picture
-- remove register from login
 
 
 
+//create migration file
+    - add role
+    - add permissions as json 
+    - json contains (students - exams - grades - lectures - attendances - payment - masrofat)
+//Backend
+    - make api that modify role and permission for each user
+        - get old permissions from db and override only the incomming data
+    - foreach module check if he has authorization to make this action in this module (middleware)
+        - if not authroize then error will recieved
+    - make api to get all assistants with their permissions
+//Front-end
+    - make page that handle permissions and admin role
+    - in stage data hide data according to permissions
+    - hide attend button according to permissions

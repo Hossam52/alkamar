@@ -19,15 +19,15 @@ typedef StudentProfileBlocConsumer
 
 //
 class StudentProfileCubit extends StudentCubit {
-  StudentProfileCubit(StageModel? stageModel, this._studentId)
-      : super(stageModel);
+  StudentProfileCubit(this._studentId) : super(StageModel.empty());
   static StudentProfileCubit instance(BuildContext context) =>
       BlocProvider.of<StudentProfileCubit>(context);
 
   final int _studentId;
 
   StudentProfileResponse? _profileResponse;
-  String get whtasappContent => _profileResponse?.generateWhatsappContent ?? '';
+  String whtasappContent(DateTime from, DateTime to) =>
+      _profileResponse?.generateWhatsappContent(from: from, to: to) ?? '';
   StudentModel get student => _profileResponse!.student;
   set setStudent(StudentModel st) {
     _profileResponse!.student = st;

@@ -1,6 +1,5 @@
 import 'package:alqamar/cubits/student_cubit/student_profile_cubit.dart';
 import 'package:alqamar/cubits/student_cubit/student_states.dart';
-import 'package:alqamar/models/stage/stage_model.dart';
 import 'package:alqamar/models/student/student_model.dart';
 import 'package:alqamar/screens/students/add_student/add_student_screen.dart';
 import 'package:alqamar/screens/students/student_profile/widgets/student_absecne_widget.dart';
@@ -17,16 +16,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class StudentProfileScreen extends StatelessWidget {
-  const StudentProfileScreen(
-      {Key? key, required this.studentId, required this.stageModel})
+  const StudentProfileScreen({Key? key, required this.studentId})
       : super(key: key);
   final int studentId;
-  final StageModel? stageModel;
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          StudentProfileCubit(stageModel, studentId)..getStudentProfile(),
+      create: (_) => StudentProfileCubit(studentId)..getStudentProfile(),
       child: StudentProfileBlocBuilder(builder: (context, state) {
         final cubit = StudentProfileCubit.instance(context);
         return Scaffold(

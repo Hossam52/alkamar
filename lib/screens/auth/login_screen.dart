@@ -4,7 +4,6 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:alqamar/screens/auth/widgets/remember_me_widget.dart';
 import '../../cubits/auth_cubit/auth_cubit.dart';
 import '../../cubits/auth_cubit/auth_states.dart';
-import 'register_screen.dart';
 import 'widgets/auth_text_field.dart';
 import '../home/home_screen.dart';
 import '../../shared/methods.dart';
@@ -13,7 +12,6 @@ import '../../shared/presentation/resourses/font_manager.dart';
 import '../../shared/presentation/resourses/styles_manager.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/default_loader.dart';
-import '../../widgets/text_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -134,28 +132,28 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (kDebugMode)
                           TextButton(
                               onPressed: () async {
-                                await AuthCubit.instance(context)
-                                    .login('hossam@gmail.com', '123456');
+                                await AuthCubit.instance(context).login(
+                                    'hossam.hassan.fcis@gmail.com', '123456');
                               },
                               child: Text('Test')),
                         const SizedBox(height: 50),
-                        Row(
-                          children: [
-                            Text(
-                              'ليس لديك حساب قم بالتسجيل الان?',
-                              style: getRegularStyle(),
-                            ),
-                            TextButton(
-                                onPressed: () {
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const RegisterScreen()));
-                                },
-                                child: const TextWidget(label: 'تسجيل')),
-                          ],
-                        ),
+                        // Row(
+                        //   children: [
+                        //     Text(
+                        //       'ليس لديك حساب قم بالتسجيل الان?',
+                        //       style: getRegularStyle(),
+                        //     ),
+                        //     TextButton(
+                        //         onPressed: () {
+                        //           Navigator.pushReplacement(
+                        //               context,
+                        //               MaterialPageRoute(
+                        //                   builder: (context) =>
+                        //                       const RegisterScreen()));
+                        //         },
+                        //         child: const TextWidget(label: 'تسجيل')),
+                        //   ],
+                        // ),
                         if (state is LoginLoadingState)
                           const DefaultLoader()
                         else

@@ -1,9 +1,11 @@
 import 'package:alqamar/cubits/student_cubit/student_cubit.dart';
 import 'package:alqamar/cubits/student_cubit/student_states.dart';
 import 'package:alqamar/models/attend_status_enum.dart';
+import 'package:alqamar/screens/students/student_profile/student_profile_screen.dart';
 import 'package:alqamar/shared/methods.dart';
 import 'package:alqamar/shared/presentation/resourses/color_manager.dart';
 import 'package:alqamar/shared/presentation/resourses/font_manager.dart';
+import 'package:alqamar/widgets/custom_button.dart';
 import 'package:alqamar/widgets/default_loader.dart';
 import 'package:alqamar/widgets/error_widget.dart';
 import 'package:alqamar/widgets/text_widget.dart';
@@ -82,10 +84,27 @@ class ConfirmAttendDialogState extends State<ConfirmAttendDialog> {
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const TextWidget(
-                    label: 'حول الطالب',
-                    fontSize: FontSize.s17,
-                    fontWeight: FontWeight.bold,
+                  Row(
+                    children: [
+                      const Expanded(
+                        child: TextWidget(
+                          label: 'حول الطالب',
+                          fontSize: FontSize.s17,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Center(
+                        child: CustomButton(
+                          text: 'ملف الطالب',
+                          height: 40.h,
+                          width: 70.w,
+                          onPressed: () {
+                            Methods.navigateTo(context,
+                                StudentProfileScreen(studentId: student.id));
+                          },
+                        ),
+                      )
+                    ],
                   ),
                   const Divider(),
                   _rowItem(

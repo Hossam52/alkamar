@@ -10,6 +10,9 @@ class StageModel {
     required this.title,
     required this.stageType,
   });
+  factory StageModel.empty() {
+    return StageModel(id: 0, stageTypeId: 0, title: '', stageType: '');
+  }
 
   factory StageModel.fromJson(Map<String, dynamic> json) {
     return StageModel(

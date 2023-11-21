@@ -1,3 +1,4 @@
+import 'package:alqamar/config/date_formatter_extension.dart';
 import 'package:alqamar/models/attendance/attendance_model.dart';
 import 'package:alqamar/models/grade/grade_model.dart';
 import 'package:alqamar/models/homework/homework_model.dart';
@@ -34,29 +35,46 @@ class StudentProfileResponse {
     );
   }
 
-  String get generateWhatsappContent {
-    String gradesText = grades.isEmpty
+  String generateWhatsappContent(
+      {required DateTime from, required DateTime to}) {
+    final absenceFiltered = absence
+        .where((element) =>
+            element.date.isAfter(from) && element.date.isBefore(to))
+        .toList();
+    final lateFiltered = attendance_late
+        .where((element) =>
+            element.date.isAfter(from) && element.date.isBefore(to))
+        .toList();
+    final homeworkFiltered = homeworks
+        .where((element) =>
+            element.date.isAfter(from) && element.date.isBefore(to))
+        .toList();
+    final gradesFiltered = grades
+        .where((grade) =>
+            grade.examDate.isAfter(from) && grade.examDate.isBefore(to))
+        .toList();
+    String gradesText = gradesFiltered.isEmpty
         ? 'لا يوجد درجات'
-        : grades.map((e) => e.gradeContentReport).join('\n\n');
-    String absenceText = absence.isEmpty
+        : gradesFiltered.map((e) => e.gradeContentReport).join('\n\n');
+    String absenceText = absenceFiltered.isEmpty
         ? 'لا يوجد غياب'
-        : ('غاب الطالب عدد (${absence.length}) حصة وهي: \n') +
-            absence
+        : ('غاب الطالب عدد (${absenceFiltered.length}) حصة وهي: \n') +
+            absenceFiltered
                 .map((e) => e.getContentReport(name: 'غياب يوم '))
                 .join('\n');
-    String lateText = attendance_late.isEmpty
+    String lateText = lateFiltered.isEmpty
         ? 'لا يوجد تأخير'
-        : ('تأخر الطالب عدد (${attendance_late.length}) حصة وهي: \n') +
-            attendance_late.map((e) => e.getContentReport()).join('\n');
-    final homeowrksWithoutDone = homeworks.where(
+        : ('تأخر الطالب عدد (${lateFiltered.length}) حصة وهي: \n') +
+            lateFiltered.map((e) => e.getContentReport()).join('\n');
+    final homeowrksWithoutDone = homeworkFiltered.where(
         (element) => element.homeworkStatusEnum != HomeworkStatusEnum.done);
-    String homeworkText = homeworks.isEmpty
+    String homeworkText = homeworkFiltered.isEmpty
         ? 'لا يوجد واجبات'
         : 'منتظم في عمل الواجبات ${homeowrksWithoutDone.isEmpty ? '' : 'ماعدا:\n'} ${homeowrksWithoutDone.map((e) => e.getContentReport()).join('\n')}';
 
     String text = '''
 
-تقرير خاص بالطالب/ \n ${student.name}
+تقرير خاص بالطالب/ \n ${student.name} من ${from.formatDate()} إلي ${to.formatDate()}
 📌 درجات الطالب 💪
 $gradesText
 

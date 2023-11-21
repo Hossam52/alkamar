@@ -75,7 +75,7 @@ class _PaymentsTableState extends State<PaymentsTable> {
                   final payment = student.payments![index];
 
                   return CellItem(
-                      content: payment.paymentStatus.title,
+                      content: payment.generateTitle,
                       onPressed: () {
                         try {
                           final payment = widget.payments[index];

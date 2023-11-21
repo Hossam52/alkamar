@@ -183,8 +183,8 @@ class _AlkamarTableState extends State<AlkamarTable> {
                                     Methods.navigateTo(
                                         context,
                                         StudentProfileScreen(
-                                            studentId: student.id,
-                                            stageModel: widget.stage));
+                                          studentId: student.id,
+                                        ));
                                   },
                                   child: Row(
                                     crossAxisAlignment:
@@ -341,6 +341,7 @@ class _StickyLegend extends StatelessWidget {
         height: height,
         child: legend,
       ),
+      SizedBox(height: 8.h),
       Expanded(
         child: data,
       )

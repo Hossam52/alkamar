@@ -1,7 +1,7 @@
 import 'package:alqamar/widgets/text_widget.dart';
 
 import '../auth/login_screen.dart';
-import '../auth/register_screen.dart';
+
 import '../../shared/presentation/resourses/color_manager.dart';
 import '../../shared/presentation/resourses/font_manager.dart';
 import '../../shared/presentation/resourses/styles_manager.dart';
@@ -68,31 +68,32 @@ class OnBoardingScreen extends StatelessWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
+                            // Expanded(
+                            //   child: ElevatedButton(
+                            //     style: ButtonStyle(
+                            //         backgroundColor: MaterialStatePropertyAll(
+                            //             ColorManager.accentColor)),
+                            //     onPressed: () {
+                            //       Navigator.push(
+                            //           context,
+                            //           MaterialPageRoute(
+                            //               builder: (context) =>
+                            //                   const RegisterScreen()));
+                            //     },
+                            //     child: Text(
+                            //       'تسجيل حساب جديد',
+                            //       style:
+                            //           getBoldStyle(color: ColorManager.white),
+                            //     ),
+                            //   ),
+                            // ),
                             Expanded(
                               child: ElevatedButton(
                                 style: ButtonStyle(
                                     backgroundColor: MaterialStatePropertyAll(
-                                        ColorManager.accentColor)),
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const RegisterScreen()));
-                                },
-                                child: Text(
-                                  'تسجيل حساب جديد',
-                                  style:
-                                      getBoldStyle(color: ColorManager.white),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: ElevatedButton(
-                                style: const ButtonStyle(
-                                    backgroundColor: MaterialStatePropertyAll(
-                                        Colors.transparent),
-                                    elevation: MaterialStatePropertyAll(0)),
+                                        ColorManager.accentColor),
+                                    elevation:
+                                        const MaterialStatePropertyAll(0)),
                                 onPressed: () {
                                   Navigator.push(
                                       context,

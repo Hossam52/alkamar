@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:alqamar/models/attend_status_enum.dart';
 import 'package:alqamar/models/attendance/attendance_model.dart';
 import 'package:alqamar/models/exam/exam_model.dart';
@@ -171,12 +169,11 @@ class StudentModel {
   String get studentStatusText => !student_status ? 'متوقف' : 'منتظم';
   void setHomework(HomeworkModel homework) {
     final homeworkIndex =
-        homeworks?.indexWhere((element) => element.id == homework.lecId) ?? -1;
+        homeworks?.indexWhere((element) => element.lecId == homework.lecId) ??
+            -1;
     if (homeworkIndex == -1) return;
-    homeworks![homeworkIndex].homeworkStatusEnum = homework.homeworkStatusEnum;
-    homeworks![homeworkIndex].homework_status = homework.homework_status;
-    homeworks![homeworkIndex].studentId = id;
-    homeworks![homeworkIndex].lecId = homework.lecId;
+
+    homeworks![homeworkIndex] = homework;
   }
 
   void setGrade(GradeModel grade) {
@@ -187,14 +184,12 @@ class StudentModel {
   }
 
   void setPayment(PaymentsModel payment) {
-    final paymentIndex =
-        payments?.indexWhere((element) => element.id == payment.payment_id) ??
-            -1;
+    final paymentIndex = payments?.indexWhere(
+            (element) => element.payment_id == payment.payment_id) ??
+        -1;
     if (paymentIndex == -1) return;
-    payments![paymentIndex].paymentStatus = payment.paymentStatus;
-    payments![paymentIndex].payment_status = payment.payment_status;
-    payments![paymentIndex].student_id = id;
-    payments![paymentIndex].payment_id = payment.payment_id;
+    payments![paymentIndex] = payment;
+    return;
   }
 
   void setAttendance(AttendanceModel attendance) {
@@ -202,12 +197,7 @@ class StudentModel {
         attendances?.indexWhere((element) => element.id == attendance.lecId) ??
             -1;
     if (attendanceIndex == -1) return;
-    attendances![attendanceIndex].attendStatusEnum =
-        attendance.attendStatusEnum;
-    attendances![attendanceIndex].attend_status = attendance.attend_status;
-    attendances![attendanceIndex].studentId = id;
-    attendances![attendanceIndex].lecId = attendance.lecId;
-    attendances![attendanceIndex].group = attendance.group;
+    attendances![attendanceIndex] = attendance;
   }
 
   num getGradeByExamId(int examId) {

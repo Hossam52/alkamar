@@ -59,7 +59,6 @@ class _StudentList extends StatelessWidget {
             Methods.navigateTo(
                 context,
                 StudentProfileScreen(
-                  stageModel: SearchCubit.instance(context).stage,
                   studentId: students[index].id,
                 ));
           },
