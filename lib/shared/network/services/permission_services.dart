@@ -29,7 +29,7 @@ class PermissionServices {
           url: EndPoints.addPermission,
           data: {
             'user_id': userId,
-            // 'role': userRole.name,
+            'role': userRole.name,
             'permissions': permissions.map((e) => e.toMap()).toList(),
           },
           token: await CacheHelper.getToken);

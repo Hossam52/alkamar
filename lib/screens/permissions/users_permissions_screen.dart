@@ -1,3 +1,4 @@
+import 'package:alqamar/cubits/app_cubit/app_cubit.dart';
 import 'package:alqamar/cubits/permissions_cubit/permission_cubit.dart';
 import 'package:alqamar/cubits/permissions_cubit/permission_states.dart';
 import 'package:alqamar/models/auth/user_model.dart';
@@ -40,6 +41,9 @@ class _UsersPermissionsScreenState extends State<UsersPermissionsScreen> {
             if (state is GetAllUsersErrorState) {
               Methods.showSnackBar(context, state.error);
             }
+            if (state is AddUserPermissionsErrorState) {
+              Methods.showSnackBar(context, state.error);
+            }
           }, builder: (context, state) {
             final cubit = PermissionCubit.instance(context);
             if (state is GetAllUsersLoadingState) return const DefaultLoader();
@@ -54,22 +58,22 @@ class _UsersPermissionsScreenState extends State<UsersPermissionsScreen> {
               children: [
                 _usersDropDown(users),
                 if (selectedUser != null) ...[
-                  // ListTile(
-                  //   onTap: () {
-                  //     setState(() {
-                  //       _markAsAdmin = !_markAsAdmin;
-                  //     });
-                  //   },
-                  //   leading: Checkbox(
-                  //     value: _markAsAdmin,
-                  //     onChanged: (val) {
-                  //       setState(() {
-                  //         _markAsAdmin = !_markAsAdmin;
-                  //       });
-                  //     },
-                  //   ),
-                  //   title: TextWidget(label: 'تعيين ك مدير نظام (Admin)'),
-                  // ),
+                  ListTile(
+                    onTap: () {
+                      setState(() {
+                        _markAsAdmin = !_markAsAdmin;
+                      });
+                    },
+                    leading: Checkbox(
+                      value: _markAsAdmin,
+                      onChanged: (val) {
+                        setState(() {
+                          _markAsAdmin = !_markAsAdmin;
+                        });
+                      },
+                    ),
+                    title: const TextWidget(label: 'تعيين ك مدير نظام (Admin)'),
+                  ),
                   Expanded(
                     child: SingleChildScrollView(
                       child: Padding(
