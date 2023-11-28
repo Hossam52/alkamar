@@ -51,11 +51,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
           listener: (context, state) {
             if (state is RegisterSuccessState) {
               Methods.showSnackBar(context, 'تم تسجيل حساب جديد بنجاح ');
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()));
+              Navigator.pop(context);
+              // Navigator.pushReplacement(context,
+              //     MaterialPageRoute(builder: (context) => const LoginScreen()));
             }
             if (state is RegisterErrorState) {
-              Methods.showSuccessSnackBar(context, state.error);
+              Methods.showSnackBar(context, state.error);
             }
           },
           builder: (context, state) {
@@ -145,31 +146,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           AuthTextField.customTextField(
                             controller: TextEditingController(),
                             label: '',
-                            textField: TextWidget(
+                            textField: const TextWidget(
                               fontSize: FontSize.s12,
                               label: '* يجب ان يكون كلمة المرور اكثر من 6 حروف',
                             ),
                           ),
                           const SizedBox(height: 50),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'لديك حساب؟',
-                                style: getRegularStyle(),
-                              ),
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const LoginScreen()));
-                                  },
-                                  child:
-                                      const TextWidget(label: 'تسجيل الدخول')),
-                            ],
-                          ),
+                          //_haveAccount(context),
                           if (state is RegisterLoadingState)
                             const DefaultLoader()
                           else
@@ -199,6 +182,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
           },
         ),
       ),
+    );
+  }
+
+  Row _haveAccount(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'لديك حساب؟',
+          style: getRegularStyle(),
+        ),
+        TextButton(
+            onPressed: () {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()));
+            },
+            child: const TextWidget(label: 'تسجيل الدخول')),
+      ],
     );
   }
 }

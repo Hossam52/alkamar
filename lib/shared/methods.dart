@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../widgets/text_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 abstract class Methods {
   Methods._();
@@ -13,27 +14,17 @@ abstract class Methods {
 
   static void showSnackBar(BuildContext context, String text,
       [int seconds = 2]) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        duration: Duration(seconds: seconds),
-        content: TextWidget(
-          label: text,
-        ),
-        backgroundColor: Colors.red,
-      ),
+    Fluttertoast.showToast(
+      msg: text,
+      backgroundColor: Colors.red,
     );
   }
 
   static void showSuccessSnackBar(BuildContext context, String text,
-      [int seconds = 2]) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        duration: Duration(seconds: seconds),
-        content: TextWidget(
-          label: text,
-        ),
-        backgroundColor: Colors.green,
-      ),
+      [int seconds = 2]) async {
+    Fluttertoast.showToast(
+      msg: text,
+      backgroundColor: Colors.green,
     );
   }
 

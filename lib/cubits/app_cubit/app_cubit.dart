@@ -86,6 +86,12 @@ class AppCubit extends Cubit<AppStates> {
       emit(GetUserErrorState(error: e.toString()));
     }
   }
+
+  void clearData() {
+    _user = null;
+    _stages = null;
+    _selectedBottomIndex = 1;
+  }
 }
 
 extension LoggedInUser on BuildContext {

@@ -13,6 +13,7 @@ import 'package:alqamar/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class UsersPermissionsScreen extends StatefulWidget {
   const UsersPermissionsScreen({super.key});
@@ -25,7 +26,7 @@ class _UsersPermissionsScreenState extends State<UsersPermissionsScreen> {
   User? selectedUser;
   List<PermissionModel> _userPermissions = [];
   bool _markAsAdmin = false;
-
+  double height = 40.h;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,55 +71,88 @@ class _UsersPermissionsScreenState extends State<UsersPermissionsScreen> {
                   //   title: TextWidget(label: 'تعيين ك مدير نظام (Admin)'),
                   // ),
                   Expanded(
-                    child: Table(
-                      columnWidths: const {0: FlexColumnWidth(2)},
-                      children: [
-                        const TableRow(children: [
-                          Center(child: TextWidget(label: 'الميزة')),
-                          Center(child: TextWidget(label: 'عرض')),
-                          Center(child: TextWidget(label: 'اضافة')),
-                          Center(child: TextWidget(label: 'تعديل')),
-                          Center(child: TextWidget(label: 'حذف')),
-                        ]),
-                        ...availablePermissions.map(
-                          (e) {
-                            final currentPermissions = _userPermissions
-                                .where((element) => element.id == e.id)
-                                .firstOrNull;
-                            return TableRow(children: [
-                              Center(child: TextWidget(label: e.module)),
-                              _permissionCheckbox(e.view,
-                                  currentVal: currentPermissions?.view,
-                                  onChanged: (val) {
-                                final index = _changeSelectedValue(e);
-                                _userPermissions[index].view =
-                                    !(_userPermissions[index].view);
-                              }),
-                              _permissionCheckbox(e.create,
-                                  currentVal: currentPermissions?.create,
-                                  onChanged: (val) {
-                                final index = _changeSelectedValue(e);
-                                _userPermissions[index].create =
-                                    !(_userPermissions[index].create);
-                              }),
-                              _permissionCheckbox(e.update,
-                                  currentVal: currentPermissions?.update,
-                                  onChanged: (val) {
-                                final index = _changeSelectedValue(e);
-                                _userPermissions[index].update =
-                                    !(_userPermissions[index].update);
-                              }),
-                              _permissionCheckbox(e.delete,
-                                  currentVal: currentPermissions?.delete,
-                                  onChanged: (val) {
-                                final index = _changeSelectedValue(e);
-                                _userPermissions[index].delete =
-                                    !(_userPermissions[index].delete);
-                              }),
-                            ]);
-                          },
-                        ).toList()
-                      ],
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Table(
+                          border: TableBorder.all(color: Colors.grey),
+                          columnWidths: const {0: FlexColumnWidth(2)},
+                          children: [
+                            const TableRow(children: [
+                              Center(
+                                  child: TextWidget(
+                                label: 'الميزة',
+                                fontWeight: FontWeight.bold,
+                              )),
+                              Center(
+                                  child: TextWidget(
+                                label: 'عرض',
+                                fontWeight: FontWeight.bold,
+                              )),
+                              Center(
+                                  child: TextWidget(
+                                label: 'اضافة',
+                                fontWeight: FontWeight.bold,
+                              )),
+                              Center(
+                                  child: TextWidget(
+                                label: 'تعديل',
+                                fontWeight: FontWeight.bold,
+                              )),
+                              Center(
+                                  child: TextWidget(
+                                label: 'حذف',
+                                fontWeight: FontWeight.bold,
+                              )),
+                            ]),
+                            ...availablePermissions.map(
+                              (e) {
+                                final currentPermissions = _userPermissions
+                                    .where((element) => element.id == e.id)
+                                    .firstOrNull;
+                                return TableRow(children: [
+                                  SizedBox(
+                                      height: height,
+                                      child: Center(
+                                        child: TextWidget(
+                                          label: e.title,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      )),
+                                  _permissionCheckbox(e.view,
+                                      currentVal: currentPermissions?.view,
+                                      onChanged: (val) {
+                                    final index = _changeSelectedValue(e);
+                                    _userPermissions[index].view =
+                                        !(_userPermissions[index].view);
+                                  }),
+                                  _permissionCheckbox(e.create,
+                                      currentVal: currentPermissions?.create,
+                                      onChanged: (val) {
+                                    final index = _changeSelectedValue(e);
+                                    _userPermissions[index].create =
+                                        !(_userPermissions[index].create);
+                                  }),
+                                  _permissionCheckbox(e.update,
+                                      currentVal: currentPermissions?.update,
+                                      onChanged: (val) {
+                                    final index = _changeSelectedValue(e);
+                                    _userPermissions[index].update =
+                                        !(_userPermissions[index].update);
+                                  }),
+                                  _permissionCheckbox(e.delete,
+                                      currentVal: currentPermissions?.delete,
+                                      onChanged: (val) {
+                                    final index = _changeSelectedValue(e);
+                                    _userPermissions[index].delete =
+                                        !(_userPermissions[index].delete);
+                                  }),
+                                ]);
+                              },
+                            ).toList()
+                          ],
+                        ),
+                      ),
                     ),
                     // _Permissions(availablePermissions: availablePermissions),
                   ),
@@ -186,15 +220,24 @@ class _UsersPermissionsScreenState extends State<UsersPermissionsScreen> {
 
   Widget _permissionCheckbox(bool displayBlock,
       {bool? currentVal, void Function(bool?)? onChanged}) {
-    return Visibility(
-      visible: displayBlock,
-      child: Checkbox(
-          visualDensity: VisualDensity.comfortable,
-          value: currentVal ?? false,
-          onChanged: (val) {
-            onChanged!(val);
-            setState(() {});
-          }),
+    return SizedBox(
+      height: height,
+      child: Center(
+        child: Visibility(
+          visible: displayBlock,
+          child: Checkbox(
+              visualDensity: VisualDensity.comfortable,
+              side: BorderSide(color: ColorManager.accentColor),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+              value: currentVal ?? false,
+              onChanged: (val) {
+                onChanged!(val);
+                setState(() {});
+              }),
+        ),
+      ),
     );
   }
 }

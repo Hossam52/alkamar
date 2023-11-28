@@ -7,6 +7,7 @@ import 'package:alqamar/models/auth/permission_model.dart';
 class PermissionModel {
   int id;
   String module;
+  String title;
   bool view;
   bool create;
   bool update;
@@ -16,6 +17,7 @@ class PermissionModel {
       {this.id = 0,
       this.view = false,
       this.module = '',
+      this.title = '',
       this.create = false,
       this.update = false,
       this.delete = false});
@@ -35,6 +37,7 @@ class PermissionModel {
     return PermissionModel(
       id: map['id']?.toInt() ?? 0,
       module: map['module'] ?? '',
+      title: map['title'] ?? '',
       view: map['view'] ?? false,
       create: map['create'] ?? false,
       update: map['update'] ?? false,

@@ -1,3 +1,5 @@
+import 'package:alqamar/models/auth/user_role_enum.dart';
+import 'package:alqamar/screens/auth/register_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -99,16 +101,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ]),
                     _divider(),
-                    SettingsSectionWidget(title: ' الصلاحيات', items: [
-                      SettingItem(
-                          title: 'صلاحيات المستخدمين',
-                          icon: FontAwesomeIcons.circleInfo,
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (_) =>
-                                    const UsersPermissionsScreen()));
-                          }),
-                    ])
+                    if (context.currentUser?.roleEnum.isAdmin ?? false)
+                      SettingsSectionWidget(title: ' الصلاحيات', items: [
+                        SettingItem(
+                            title: 'صلاحيات المستخدمين',
+                            icon: FontAwesomeIcons.circleInfo,
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (_) =>
+                                      const UsersPermissionsScreen()));
+                            }),
+                        SettingItem(
+                            title: 'اضافة مستخدم جديد',
+                            icon: FontAwesomeIcons.circleInfo,
+                            onTap: () {
+                              Methods.navigateTo(
+                                  context, const RegisterScreen());
+                            }),
+                      ])
                   ]));
         }),
       ),
@@ -184,6 +194,7 @@ class _LogoutButton extends StatelessWidget {
           listener: (context, state) {
             if (state is LogoutSuccessState) {
               Navigator.pop(context);
+              AppCubit.instance(context).clearData();
               Navigator.push(
                   context,
                   MaterialPageRoute(
