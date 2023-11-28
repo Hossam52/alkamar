@@ -1,3 +1,4 @@
+import 'package:alqamar/cubits/app_cubit/app_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -57,7 +58,11 @@ class _HomeworksTableState extends State<HomeworksTable> {
               onPressed: () {
                 Methods.navigateTo(context, LectureStatsScreen(lecture: lec));
               },
-              action: _CustomStoreHomework(lec: lec),
+              action: !context.canPerformAction(
+                      context.loggedInPermissions?.homeworks,
+                      create: true)
+                  ? null
+                  : _CustomStoreHomework(lec: lec),
             ))
         .toList();
   }
@@ -182,16 +187,18 @@ class _ConfirmHomeworkActions extends StatelessWidget {
     );
   }
 
-  CustomButton _actionButton(StudentCubit cubit,
+  Widget _actionButton(StudentCubit cubit,
       {required HomeworkStatusEnum homeworkStatus, required IconData icon}) {
-    return CustomButton(
-      text: homeworkStatus.getHomeworkText,
-      backgroundColor: homeworkStatus.getHomeworkColor,
-      leadingIcon: Icon(icon),
-      onPressed: () {
-        cubit.addHomeWork(lectureId, homeworkStatus);
-      },
-    );
+    return Builder(builder: (context) {
+      return CustomButton(
+        text: homeworkStatus.getHomeworkText,
+        backgroundColor: homeworkStatus.getHomeworkColor,
+        leadingIcon: Icon(icon),
+        onPressed: () {
+          cubit.addHomeWork(context, true, lectureId, homeworkStatus);
+        },
+      );
+    });
   }
 
   Widget _sizedBox() {

@@ -1,3 +1,4 @@
+import 'package:alqamar/cubits/app_cubit/app_cubit.dart';
 import 'package:alqamar/shared/presentation/resourses/color_manager.dart';
 import 'package:alqamar/widgets/student_group_widget.dart';
 import 'package:flutter/material.dart';
@@ -70,7 +71,11 @@ class _AttendanceTableState extends State<AttendanceTable> {
         onPressed: () {
           Methods.navigateTo(context, LectureStatsScreen(lecture: lec));
         },
-        action: _CustomAttendButton(lec: lec)));
+        action: !context.canPerformAction(
+                context.loggedInPermissions?.attendances,
+                create: true)
+            ? null
+            : _CustomAttendButton(lec: lec)));
   }
 
   Iterable<TableRowItem> _rows() {

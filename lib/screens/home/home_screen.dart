@@ -42,30 +42,35 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AppCubit()..getStages(),
-      child: Scaffold(
-          bottomNavigationBar: _bottomNavigation(),
-          resizeToAvoidBottomInset: false,
-          body: Builder(builder: (context) {
-            return BlocListener<AppCubit, AppStates>(
-                listener: (context, state) {
-                  if (state is ChangeAppBottomState) {
-                    log(state.bottomIndex);
+  void initState() {
+    super.initState();
+    AppCubit.instance(context)
+      ..getStages()
+      ..getUser();
+  }
 
-                    setState(() {
-                      _pageController.jumpToPage(state.bottomIndex);
-                    });
-                  }
-                },
-                child: PageView(
-                  controller: _pageController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: _items.map((e) => e.child).toList(),
-                ));
-          })),
-    );
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        bottomNavigationBar: _bottomNavigation(),
+        resizeToAvoidBottomInset: false,
+        body: Builder(builder: (context) {
+          return BlocListener<AppCubit, AppStates>(
+              listener: (context, state) {
+                if (state is ChangeAppBottomState) {
+                  log(state.bottomIndex);
+
+                  setState(() {
+                    _pageController.jumpToPage(state.bottomIndex);
+                  });
+                }
+              },
+              child: PageView(
+                controller: _pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                children: _items.map((e) => e.child).toList(),
+              ));
+        }));
   }
 
   Widget _bottomNavigation() {

@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:alqamar/cubits/app_cubit/app_cubit.dart';
 import 'package:alqamar/models/payments/payment_status_enum.dart';
 import 'package:alqamar/models/payments/payments_model.dart';
 import 'package:alqamar/screens/statistics/payment_statistics_screen.dart';
@@ -59,7 +62,11 @@ class _PaymentsTableState extends State<PaymentsTable> {
                 Methods.navigateTo(
                     context, PaymentStatistcsscreen(payment: payment));
               },
-              action: _CustomStorePayment(payment: payment),
+              action: !context.canPerformAction(
+                      context.loggedInPermissions?.student_payments,
+                      create: true)
+                  ? null
+                  : _CustomStorePayment(payment: payment),
             ))
         .toList();
   }
@@ -79,13 +86,16 @@ class _PaymentsTableState extends State<PaymentsTable> {
                       onPressed: () {
                         try {
                           final payment = widget.payments[index];
+                          log(payment.paymentStatus.toString());
                           showDialog(
                               context: context,
                               builder: (_) => BlocProvider.value(
                                   value: StudentCubit.instance(context),
                                   child: ConfirmAttendDialog(
                                     studentId: student.id.toString(),
-                                    actionsWidget: _ConfirmHomeworkActions(
+                                    actionsWidget: _ConfirmPaymentActions(
+                                        addNew: payment.paymentStatus
+                                            is UndifinedPayment,
                                         paymentId: payment.id.toString()),
                                   )));
                         } on Exception {
@@ -108,27 +118,31 @@ class _CustomStorePayment extends StatelessWidget {
     return CustomButton(
       text: 'تسجيل',
       onPressed: () async {
+        final addNew = payment.paymentStatus is UndifinedPayment;
         await Methods.navigateTo(
             context,
             BlocProvider.value(
                 value: StudentCubit.instance(context),
                 child: QrScreen(
                   title: payment.title,
-                  actionsWidget:
-                      _ConfirmHomeworkActions(paymentId: payment.id.toString()),
+                  actionsWidget: _ConfirmPaymentActions(
+                      addNew: payment.paymentStatus is! UndifinedPayment,
+                      paymentId: payment.id.toString()),
                   onManual: (studentCode) async {
                     await showDialog(
                         context: context,
                         builder: (_) => BlocProvider.value(
                             value: StudentCubit.instance(context),
-                            child: _confirm(studentCode: studentCode)));
+                            child: _confirm(
+                                studentCode: studentCode, addNew: addNew)));
                   },
                   onQr: (studentid) async {
                     await showDialog(
                         context: context,
                         builder: (_) => BlocProvider.value(
                             value: StudentCubit.instance(context),
-                            child: _confirm(studentId: studentid)));
+                            child: _confirm(
+                                studentId: studentid, addNew: addNew)));
                   },
                 )));
         StudentCubit.instance(context).getStudentPayments();
@@ -136,18 +150,21 @@ class _CustomStorePayment extends StatelessWidget {
     );
   }
 
-  ConfirmAttendDialog _confirm({String? studentId, String? studentCode}) {
+  ConfirmAttendDialog _confirm(
+      {String? studentId, String? studentCode, bool addNew = true}) {
     return ConfirmAttendDialog(
       studentCode: studentCode,
       studentId: studentId,
-      actionsWidget: _ConfirmHomeworkActions(paymentId: payment.id.toString()),
+      actionsWidget: _ConfirmPaymentActions(
+          addNew: addNew, paymentId: payment.id.toString()),
     );
   }
 }
 
-class _ConfirmHomeworkActions extends StatelessWidget {
-  const _ConfirmHomeworkActions({required this.paymentId});
+class _ConfirmPaymentActions extends StatelessWidget {
+  const _ConfirmPaymentActions({required this.addNew, required this.paymentId});
   final String paymentId;
+  final bool addNew;
   @override
   Widget build(BuildContext context) {
     return StudentBlocConsumer(
@@ -190,16 +207,18 @@ class _ConfirmHomeworkActions extends StatelessWidget {
     );
   }
 
-  CustomButton _actionButton(StudentCubit cubit,
+  Widget _actionButton(StudentCubit cubit,
       {required PaymentStatus paymentStatus, required IconData icon}) {
-    return CustomButton(
-      text: paymentStatus.title,
-      backgroundColor: paymentStatus.color,
-      leadingIcon: Icon(icon),
-      onPressed: () {
-        cubit.addPayment(paymentId, paymentStatus);
-      },
-    );
+    return Builder(builder: (context) {
+      return CustomButton(
+        text: paymentStatus.title,
+        backgroundColor: paymentStatus.color,
+        leadingIcon: Icon(icon),
+        onPressed: () {
+          cubit.addPayment(context, addNew, paymentId, paymentStatus);
+        },
+      );
+    });
   }
 
   Widget _sizedBox() {

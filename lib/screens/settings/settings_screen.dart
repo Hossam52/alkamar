@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'package:alqamar/screens/app_static_data/app_static_data.dart';
+import 'package:alqamar/screens/permissions/users_permissions_screen.dart';
 import '../../cubits/app_cubit/app_cubit.dart';
 import '../../cubits/app_cubit/app_states.dart';
 import '../../cubits/auth_cubit/auth_cubit.dart';
@@ -99,13 +99,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ]),
                     _divider(),
-                    SettingsSectionWidget(title: ' بيانات عامة', items: [
+                    SettingsSectionWidget(title: ' الصلاحيات', items: [
                       SettingItem(
-                          title: 'حول التطبيق',
+                          title: 'صلاحيات المستخدمين',
                           icon: FontAwesomeIcons.circleInfo,
                           onTap: () {
                             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (_) => const AboutAppScreen()));
+                                builder: (_) =>
+                                    const UsersPermissionsScreen()));
                           }),
                     ])
                   ]));

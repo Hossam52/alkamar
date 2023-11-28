@@ -90,7 +90,7 @@ class _ConfirmAttendActionsState extends State<ConfirmAttendActions> {
       backgroundColor: attendStatus.getAttendanceColor,
       leadingIcon: Icon(icon),
       onPressed: () {
-        cubit.attend(widget.lectureId, attendStatus, groupId);
+        cubit.attend(context, true, widget.lectureId, attendStatus, groupId);
       },
     );
   }

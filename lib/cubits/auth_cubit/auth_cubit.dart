@@ -24,14 +24,14 @@ class AuthCubit extends Cubit<AuthStates> {
     try {
       emit(LoginLoadingState());
       final response = await AuthServices.login(email, password);
-      final user = userModel.User.fromMap(response);
+      final user = userModel.AuthUserModel.fromMap(response);
       Constants.token = user.access_token;
 
       await CacheHelper.setToken(user.access_token);
       await _remember.saveData(email, password);
 
-      log(user.toString());
-      emit(LoginSuccessState(user));
+      log(user.user.toString());
+      emit(LoginSuccessState(user.user));
     } catch (e) {
       emit(LoginErrorState(error: e.toString()));
       rethrow;
@@ -116,8 +116,8 @@ class AuthCubit extends Cubit<AuthStates> {
       );
 
       log(response.toString());
-      final user = userModel.User.fromMap(response);
-      emit(UpdateProfileDataSuccessState(user));
+      final user = userModel.AuthUserModel.fromMap(response);
+      emit(UpdateProfileDataSuccessState(user.user));
     } catch (e) {
       emit(UpdateProfileDataErrorState(error: e.toString()));
     }

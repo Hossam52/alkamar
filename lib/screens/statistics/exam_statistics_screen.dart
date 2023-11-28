@@ -1,3 +1,4 @@
+import 'package:alqamar/cubits/app_cubit/app_cubit.dart';
 import 'package:alqamar/cubits/exam_cubit/exam_cubit.dart';
 import 'package:alqamar/cubits/exam_cubit/exam_states.dart';
 import 'package:alqamar/models/exam/exam_model.dart';
@@ -31,28 +32,32 @@ class ExamStatsScreen extends StatelessWidget {
           appBar: AppBar(
             title: TextWidget(label: 'بيانات امتحان ${exam.title}'),
             actions: [
-              IconButton(
-                  icon: const Icon(Icons.edit),
+              if (context.canPerformAction(context.loggedInPermissions?.exams,
+                  update: true))
+                IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (_) {
+                            return BlocProvider.value(
+                              value: ExamCubit.instance(context),
+                              child: _UpdateExam(exam: exam),
+                            );
+                          });
+                    }),
+              if (context.canPerformAction(context.loggedInPermissions?.exams,
+                  delete: true))
+                IconButton(
+                  icon: Icon(Icons.delete, color: ColorManager.error),
                   onPressed: () {
                     showDialog(
                         context: context,
-                        builder: (_) {
-                          return BlocProvider.value(
+                        builder: (_) => BlocProvider.value(
                             value: ExamCubit.instance(context),
-                            child: _UpdateExam(exam: exam),
-                          );
-                        });
-                  }),
-              IconButton(
-                icon: Icon(Icons.delete, color: ColorManager.error),
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (_) => BlocProvider.value(
-                          value: ExamCubit.instance(context),
-                          child: _DeleteExam(exam: exam)));
-                },
-              ),
+                            child: _DeleteExam(exam: exam)));
+                  },
+                ),
             ],
           ),
           body: SafeArea(

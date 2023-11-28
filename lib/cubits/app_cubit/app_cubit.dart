@@ -1,5 +1,8 @@
 import 'dart:developer';
 
+import 'package:alqamar/models/auth/permission_model.dart';
+import 'package:alqamar/models/auth/user_role_enum.dart';
+import 'package:alqamar/models/permissions/available_permissions_model.dart';
 import 'package:alqamar/models/stage/stage_model.dart';
 import 'package:alqamar/models/stage/stage_type_model.dart';
 import 'package:alqamar/models/stage/stages_response.dart';
@@ -22,6 +25,7 @@ class AppCubit extends Cubit<AppStates> {
       BlocProvider.of<AppCubit>(context);
   User? _user;
   User? get user => _user;
+  AllPermissionsModel? get permissions => _user?.permissions;
 
   //All stages model
   StagesResponse? _stages;
@@ -75,10 +79,31 @@ class AppCubit extends Cubit<AppStates> {
       emit(GetUserLoadingState());
       final response = await AuthServices.profile();
       log(response.toString());
-      _user = User.fromMap(response);
+      final userModel = AuthUserModel.fromMap(response);
+      _user = userModel.user;
       emit(GetUserSuccessState());
     } catch (e) {
       emit(GetUserErrorState(error: e.toString()));
     }
+  }
+}
+
+extension LoggedInUser on BuildContext {
+  User? get currentUser => AppCubit.instance(this).user;
+  AllPermissionsModel? get loggedInPermissions => currentUser?.permissions;
+  List<PermissionModel> get currentUserPermissionsList =>
+      currentUser?.allUserPermissions ?? [];
+  bool canPerformAction(PermissionModel? permission,
+      {bool view = false,
+      bool create = false,
+      bool update = false,
+      bool delete = false}) {
+    if (currentUser != null && currentUser!.roleEnum.isAdmin) return true;
+    if (permission == null) return false;
+    if (view) return permission.view;
+    if (create) return permission.create;
+    if (update) return permission.update;
+    if (delete) return permission.delete;
+    return false;
   }
 }

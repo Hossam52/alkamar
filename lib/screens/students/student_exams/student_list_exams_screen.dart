@@ -1,3 +1,4 @@
+import 'package:alqamar/cubits/app_cubit/app_cubit.dart';
 import 'package:alqamar/cubits/student_cubit/student_cubit.dart';
 import 'package:alqamar/cubits/student_cubit/student_states.dart';
 import 'package:alqamar/models/stage/stage_model.dart';
@@ -28,22 +29,25 @@ class _StudentListExamsState extends State<StudentListExams> {
             label: 'درجات الامتحانات',
           ),
           actions: [
-            Builder(builder: (context) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CustomButton(
-                  text: 'مجمع',
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (_) => BlocProvider.value(
-                              value: StudentCubit.instance(context),
-                              child: const CollectiveExamDialog(),
-                            ));
-                  },
-                ),
-              );
-            })
+            !context.canPerformAction(context.loggedInPermissions?.exams,
+                    create: true)
+                ? const SizedBox.shrink()
+                : Builder(builder: (context) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CustomButton(
+                        text: 'مجمع',
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (_) => BlocProvider.value(
+                                    value: StudentCubit.instance(context),
+                                    child: const CollectiveExamDialog(),
+                                  ));
+                        },
+                      ),
+                    );
+                  })
           ],
         ),
         body: SafeArea(

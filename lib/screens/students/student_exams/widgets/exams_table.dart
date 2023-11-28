@@ -1,3 +1,4 @@
+import 'package:alqamar/cubits/app_cubit/app_cubit.dart';
 import 'package:alqamar/cubits/student_cubit/student_cubit.dart';
 import 'package:alqamar/models/exam/exam_model.dart';
 import 'package:alqamar/models/grade/grade_model.dart';
@@ -73,27 +74,31 @@ class _ExamGradesTableState extends State<ExamGradesTable> {
                   onPressed: () {
                     Methods.navigateTo(context, ExamStatsScreen(exam: exam));
                   },
-                  action: CustomButton(
-                    text: 'اضافة',
-                    onPressed: () async {
-                      await Methods.navigateTo(
-                          context,
-                          BlocProvider.value(
-                              value: StudentCubit.instance(context),
-                              child: QrScreen(
-                                title: exam.title,
-                                actionsWidget: Container(),
-                                onManual: (studentCode) async {
-                                  await _confirm(context, exam,
-                                      studentCode: studentCode);
-                                },
-                                onQr: (studentid) async {
-                                  await _confirm(context, exam,
-                                      studentId: studentid);
-                                },
-                              )));
-                    },
-                  ),
+                  action: !context.canPerformAction(
+                          context.loggedInPermissions?.grades,
+                          create: true)
+                      ? null
+                      : CustomButton(
+                          text: 'اضافة',
+                          onPressed: () async {
+                            await Methods.navigateTo(
+                                context,
+                                BlocProvider.value(
+                                    value: StudentCubit.instance(context),
+                                    child: QrScreen(
+                                      title: exam.title,
+                                      actionsWidget: Container(),
+                                      onManual: (studentCode) async {
+                                        await _confirm(context, exam,
+                                            studentCode: studentCode);
+                                      },
+                                      onQr: (studentid) async {
+                                        await _confirm(context, exam,
+                                            studentId: studentid);
+                                      },
+                                    )));
+                          },
+                        ),
                 ),
               )
               .toList(),

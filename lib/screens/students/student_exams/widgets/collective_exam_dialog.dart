@@ -93,7 +93,7 @@ class CollectiveExamDialogState extends State<CollectiveExamDialog> {
                               context, 'يجب اختيار امتحانين علي الاقل');
                           return;
                         }
-                        StudentCubit.instance(context).appendCollective(
+                        StudentCubit.instance(context).appendCollective(context,
                             examIds: examsIds,
                             date: selectedDate!,
                             title: titleController.text);

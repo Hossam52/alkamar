@@ -1,3 +1,4 @@
+import 'package:alqamar/cubits/app_cubit/app_cubit.dart';
 import 'package:alqamar/cubits/lecture_cubit/lecture_cubit.dart';
 import 'package:alqamar/cubits/lecture_cubit/lecture_states.dart';
 import 'package:alqamar/cubits/stage_cubit/stage_cubit.dart';
@@ -40,28 +41,34 @@ class _LectureStatsScreenState extends State<LectureStatsScreen> {
             appBar: AppBar(
               title: TextWidget(label: 'بيانات محاضرة ${lecture.title}'),
               actions: [
-                IconButton(
-                    icon: const Icon(Icons.edit),
+                if (context.canPerformAction(
+                    context.loggedInPermissions?.lectures,
+                    update: true))
+                  IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (_) {
+                              return BlocProvider.value(
+                                value: LectureCubit.instance(context),
+                                child: _UpdateLecture(lecture: lecture),
+                              );
+                            });
+                      }),
+                if (context.canPerformAction(
+                    context.loggedInPermissions?.lectures,
+                    delete: true))
+                  IconButton(
+                    icon: Icon(Icons.delete, color: ColorManager.error),
                     onPressed: () {
                       showDialog(
                           context: context,
-                          builder: (_) {
-                            return BlocProvider.value(
+                          builder: (_) => BlocProvider.value(
                               value: LectureCubit.instance(context),
-                              child: _UpdateLecture(lecture: lecture),
-                            );
-                          });
-                    }),
-                IconButton(
-                  icon: Icon(Icons.delete, color: ColorManager.error),
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (_) => BlocProvider.value(
-                            value: LectureCubit.instance(context),
-                            child: _DeleteLecture(lecture: lecture)));
-                  },
-                ),
+                              child: _DeleteLecture(lecture: lecture)));
+                    },
+                  ),
               ],
             ),
             body: SafeArea(

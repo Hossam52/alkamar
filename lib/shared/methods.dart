@@ -1,3 +1,4 @@
+import 'package:alqamar/models/permissions/available_permissions_model.dart';
 import 'package:intl/intl.dart';
 
 import '../widgets/text_widget.dart';
@@ -34,6 +35,30 @@ abstract class Methods {
         backgroundColor: Colors.green,
       ),
     );
+  }
+
+  static void canEditPermission(PermissionModel? permission) {
+    if (permission == null || !permission.update) {
+      throw 'ليس لديك صلاحية للقيام بهذا';
+    }
+  }
+
+  static void canCreatePermission(PermissionModel? permission) {
+    if (permission == null || !permission.create) {
+      throw 'ليس لديك صلاحية للقيام بهذا';
+    }
+  }
+
+  static void canViewPermission(PermissionModel? permission) {
+    if (permission == null || !permission.view) {
+      throw 'ليس لديك صلاحية للقيام بهذا';
+    }
+  }
+
+  static void canDeletePermission(PermissionModel? permission) {
+    if (permission == null || !permission.delete) {
+      throw 'ليس لديك صلاحية للقيام بهذا';
+    }
   }
 
   static String formatDate(DateTime date,

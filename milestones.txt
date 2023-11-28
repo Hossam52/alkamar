@@ -52,6 +52,9 @@ student exam results 6h
 - in payments add date that the student paid 1h
 - in send dat via what determine duration from and to
 
+
+
+
 backend
 - add group table,model,controller and resource(done)4h
 - take in consideration when add new group what to do to the other lectures (1h)
@@ -59,7 +62,14 @@ backend
 - when get any lecture return associative groups and dates
 - modify lecture stats to be suitable for groups (can select any group to view)(done)
 - attend student by qr when the std not in the group (either attend in his group radio button or attend his in another group)
+-create migration file 3h
+    - add role
+    - add permissions as json 
+    - json contains (students - exams - grades - lectures - attendances - payment - masrofat)
 
+- make api that modify role and permission for each user
+    - get old permissions from db and override only the incomming data
+    - the values not sent to api will be donated as not authroize
 
 
 
@@ -107,13 +117,7 @@ backend
 
 
 
-//create migration file
-    - add role
-    - add permissions as json 
-    - json contains (students - exams - grades - lectures - attendances - payment - masrofat)
 //Backend
-    - make api that modify role and permission for each user
-        - get old permissions from db and override only the incomming data
     - foreach module check if he has authorization to make this action in this module (middleware)
         - if not authroize then error will recieved
     - make api to get all assistants with their permissions

@@ -1,6 +1,8 @@
 class EndPoints {
   EndPoints._();
 
+  static const String availablePermissions = '/availablePermissions';
+
   // Auth endpoints
   static const String register = '/register';
   static const String login = '/login';
@@ -10,6 +12,8 @@ class EndPoints {
   static const String changePhone = '/auth/changePhone';
   static const String changePassword = '/auth/changePassword';
   static const String logout = '/auth/logout';
+  static const String allUsers = '/auth/allUsers';
+  static const String addPermission = '/auth/addPermissions';
 
   //Stages endpoints
   static const String stages = '/stages';

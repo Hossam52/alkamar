@@ -1,3 +1,4 @@
+import 'package:alqamar/cubits/app_cubit/app_cubit.dart';
 import 'package:alqamar/cubits/stage_cubit/stage_cubit.dart';
 import 'package:alqamar/cubits/stage_cubit/stage_states.dart';
 import 'package:alqamar/models/stage/stage_model.dart';
@@ -74,88 +75,124 @@ class _StageDataScreenState extends State<StageDataScreen> {
                           context, StudentSearchScreen(stage: widget.stage));
                     },
                   ),
-                  _CustomItem(
-                    title: 'تسجيل طالب جديد',
-                    icon: Icons.person_add_alt,
-                    onPressed: () {
-                      Methods.navigateTo(
+                  if (AppCubit.instance(context)
+                          .permissions
+                          ?.students
+                          ?.create ??
+                      false)
+                    _CustomItem(
+                      title: 'تسجيل طالب جديد',
+                      icon: Icons.person_add_alt,
+                      onPressed: () {
+                        Methods.navigateTo(
+                            context,
+                            BlocProvider.value(
+                              value: StageCubit.instance(context),
+                              child: const AddStudentScreen(),
+                            ));
+                      },
+                    ),
+                  if (AppCubit.instance(context)
+                          .permissions
+                          ?.attendances
+                          ?.view ??
+                      false)
+                    _CustomItem(
+                      title: 'قائمة الطلاب',
+                      icon: Icons.list,
+                      onPressed: () {
+                        Methods.navigateTo(
+                            context,
+                            StudentListAttendances(
+                              stage: widget.stage,
+                            ));
+                      },
+                    ),
+                  if (AppCubit.instance(context).permissions?.grades?.view ??
+                      false)
+                    _CustomItem(
+                      title: 'درجات الامتحانات',
+                      icon: Icons.format_list_numbered_rtl_sharp,
+                      onPressed: () {
+                        Methods.navigateTo(
+                            context,
+                            StudentListExams(
+                              stage: widget.stage,
+                            ));
+                      },
+                    ),
+                  if (AppCubit.instance(context)
+                          .permissions
+                          ?.student_payments
+                          ?.view ??
+                      false)
+                    _CustomItem(
+                      title: 'المصروفات',
+                      icon: Icons.money,
+                      onPressed: () {
+                        _showDialog(
                           context,
-                          BlocProvider.value(
-                            value: StageCubit.instance(context),
-                            child: const AddStudentScreen(),
-                          ));
-                    },
-                  ),
-                  _CustomItem(
-                    title: 'قائمة الطلاب',
-                    icon: Icons.list,
-                    onPressed: () {
-                      Methods.navigateTo(
+                          StudentPaymentsScreen(stage: widget.stage),
+                        );
+                      },
+                    ),
+                  if (AppCubit.instance(context).permissions?.homeworks?.view ??
+                      false)
+                    _CustomItem(
+                      title: 'الواجبات',
+                      icon: Icons.edit_document,
+                      onPressed: () {
+                        _showDialog(
                           context,
-                          StudentListAttendances(
-                            stage: widget.stage,
-                          ));
-                    },
-                  ),
-                  _CustomItem(
-                    title: 'درجات الامتحانات',
-                    icon: Icons.format_list_numbered_rtl_sharp,
-                    onPressed: () {
-                      Methods.navigateTo(
-                          context,
-                          StudentListExams(
-                            stage: widget.stage,
-                          ));
-                    },
-                  ),
-                  _CustomItem(
-                    title: 'المصروفات',
-                    icon: Icons.money,
-                    onPressed: () {
-                      _showDialog(
-                        context,
-                        StudentPaymentsScreen(stage: widget.stage),
-                      );
-                    },
-                  ),
-                  _CustomItem(
-                    title: 'الواجبات',
-                    icon: Icons.edit_document,
-                    onPressed: () {
-                      _showDialog(
-                        context,
-                        StudentListHomeworks(stage: widget.stage),
-                      );
-                    },
-                  ),
-                  _CustomItem(
-                    title: 'إضافة محاضرة',
-                    icon: Icons.add,
-                    onPressed: () {
-                      _showDialog(context, const AddLectureWidget());
-                    },
-                  ),
-                  _CustomItem(
-                    title: 'إضافة امتحان',
-                    icon: Icons.add,
-                    onPressed: () {
-                      _showDialog(context, const AddExamWidget());
-                    },
-                  ),
-                  _CustomItem(
-                    title: 'إضافة مصروفات شهر',
-                    icon: Icons.add,
-                    onPressed: () {
-                      _showDialog(context, const AddPaymentWidget());
-                    },
-                  ),
-                  _CustomItem(
-                    title: 'إضافة مجموعة جديدة',
-                    icon: Icons.add,
-                    onPressed: () {
-                      _showDialog(context, const AddGroupWidget());
-                    },
-                  ),
+                          StudentListHomeworks(stage: widget.stage),
+                        );
+                      },
+                    ),
+                  if (AppCubit.instance(context)
+                          .permissions
+                          ?.lectures
+                          ?.create ??
+                      false)
+                    _CustomItem(
+                      title: 'إضافة محاضرة',
+                      icon: Icons.add,
+                      onPressed: () {
+                        _showDialog(context, const AddLectureWidget());
+                      },
+                    ),
+                  if (AppCubit.instance(context).permissions?.exams?.create ??
+                      false)
+                    _CustomItem(
+                      title: 'إضافة امتحان',
+                      icon: Icons.add,
+                      onPressed: () {
+                        _showDialog(context, const AddExamWidget());
+                      },
+                    ),
+                  if (AppCubit.instance(context)
+                          .permissions
+                          ?.payments
+                          ?.create ??
+                      false)
+                    _CustomItem(
+                      title: 'إضافة مصروفات شهر',
+                      icon: Icons.add,
+                      onPressed: () {
+                        _showDialog(context, const AddPaymentWidget());
+                      },
+                    ),
+                  if (AppCubit.instance(context)
+                          .permissions
+                          ?.lectures
+                          ?.create ??
+                      false)
+                    _CustomItem(
+                      title: 'إضافة مجموعة جديدة',
+                      icon: Icons.add,
+                      onPressed: () {
+                        _showDialog(context, const AddGroupWidget());
+                      },
+                    ),
                   _CustomItem(
                     title: 'بحث بال QR',
                     icon: Icons.image,

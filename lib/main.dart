@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:alqamar/cubits/app_cubit/app_cubit.dart';
 import 'package:alqamar/cubits/stage_cubit/stage_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -49,6 +50,7 @@ class MyApp extends StatelessWidget {
       child: ScreenUtilInit(
         builder: (_, child) => MultiBlocProvider(
           providers: [
+            BlocProvider(create: (context) => AppCubit()),
             BlocProvider(
               create: (context) => AuthCubit(),
             ),

@@ -1,3 +1,4 @@
+import 'package:alqamar/cubits/app_cubit/app_cubit.dart';
 import 'package:alqamar/cubits/student_cubit/student_profile_cubit.dart';
 import 'package:alqamar/cubits/student_cubit/student_states.dart';
 import 'package:alqamar/models/student/student_model.dart';
@@ -29,18 +30,21 @@ class StudentProfileScreen extends StatelessWidget {
           appBar: AppBar(
             title: const TextWidget(label: 'بيانات طالب'),
             actions: [
-              IconButton(
-                  onPressed: () async {
-                    final student = await Methods.navigateTo(
-                        context,
-                        AddStudentScreen(
-                          student: cubit.student,
-                        ));
-                    if (student is StudentModel) {
-                      cubit.setStudent = student;
-                    }
-                  },
-                  icon: const Icon(Icons.edit)),
+              if (context.canPerformAction(
+                  context.loggedInPermissions?.students,
+                  update: true))
+                IconButton(
+                    onPressed: () async {
+                      final student = await Methods.navigateTo(
+                          context,
+                          AddStudentScreen(
+                            student: cubit.student,
+                          ));
+                      if (student is StudentModel) {
+                        cubit.setStudent = student;
+                      }
+                    },
+                    icon: const Icon(Icons.edit)),
             ],
           ),
           body: Padding(

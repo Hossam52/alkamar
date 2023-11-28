@@ -46,7 +46,7 @@ class RouteGenerator {
   //         builder: (_) => const HelpScreen(), settings: routeSettings);
   //   case Routes.aboutApp:
   //     return MaterialPageRoute(
-  //         builder: (_) => const AboutAppScreen(), settings: routeSettings);
+  //         builder: (_) => const UsersPermissionsScreen(), settings: routeSettings);
   //   default:
   //     return unDefinedRoute();
   // }

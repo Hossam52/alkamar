@@ -5,7 +5,7 @@ import 'user_model.dart';
 class RegisterModel {
   final bool status;
   final String message;
-  final User user;
+  final AuthUserModel user;
   RegisterModel({
     required this.status,
     required this.message,
@@ -24,7 +24,7 @@ class RegisterModel {
     return RegisterModel(
       status: map['status'] ?? false,
       message: map['message'] ?? '',
-      user: User.fromMap(map),
+      user: AuthUserModel.fromMap(map),
     );
   }
 

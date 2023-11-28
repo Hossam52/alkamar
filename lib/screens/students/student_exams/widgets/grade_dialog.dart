@@ -172,6 +172,8 @@ class GradeDialogState extends State<GradeDialog> {
                           if (formKey.currentState!.validate()) {
                             FocusScope.of(context).unfocus();
                             StudentCubit.instance(context).addStudentGrade(
+                                context,
+                                widget.grade?.grade == null,
                                 student.id,
                                 selectedGroupId,
                                 num.tryParse(controller.text) ?? 0,

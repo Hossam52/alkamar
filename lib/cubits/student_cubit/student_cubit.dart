@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:alqamar/cubits/app_cubit/app_cubit.dart';
 import 'package:alqamar/models/attend_status_enum.dart';
 import 'package:alqamar/models/attendance/attendance_model.dart';
 import 'package:alqamar/models/exam/exam_model.dart';
@@ -13,6 +14,7 @@ import 'package:alqamar/models/stage/stage_model.dart';
 import 'package:alqamar/models/student/student_model.dart';
 import 'package:alqamar/models/student/student_qrs_response.dart';
 import 'package:alqamar/models/student/students_paginate_model.dart';
+import 'package:alqamar/shared/methods.dart';
 import 'package:alqamar/shared/network/services/app_services.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -76,12 +78,14 @@ class StudentCubit extends Cubit<StudentStates> {
     }
   }
 
-  Future<void> appendCollective(
+  Future<void> appendCollective(BuildContext context,
       {required Set<int> examIds,
       required String title,
       required DateTime date}) async {
     try {
       if (_stage == null) throw 'يجب اختيار المرحلة اولا';
+      Methods.canCreatePermission(context.loggedInPermissions?.exams);
+
       emit(AddCollectiveExamLoadingState());
       await AppServices.collectiveExams(
           stageId: _stage!.id,
@@ -96,10 +100,15 @@ class StudentCubit extends Cubit<StudentStates> {
     }
   }
 
-  Future<void> addStudentGrade(
-      int studentId, int? groupId, num grade, ExamModel exam) async {
+  Future<void> addStudentGrade(BuildContext context, bool addNew, int studentId,
+      int? groupId, num grade, ExamModel exam) async {
     try {
       emit(AddStudentGradeLoadingState());
+      if (addNew) {
+        Methods.canCreatePermission(context.loggedInPermissions?.grades);
+      } else {
+        Methods.canEditPermission(context.loggedInPermissions?.grades);
+      }
       final res = await AppServices.storeGrade(
           examId: exam.id,
           grade: grade,
@@ -154,20 +163,22 @@ class StudentCubit extends Cubit<StudentStates> {
     }
   }
 
-  Future<void> attend(
-      String lectureId, AttendStatusEnum attendStatusEnum, int? groupId) async {
-    _attendStudent(lectureId, attendStatusEnum.getAttendStatusIndex, groupId);
-  }
-
-  Future<void> _attendStudent(
-      String lectureId, int? attendStatus, int? groupId) async {
+  Future<void> attend(BuildContext context, bool addNew, String lectureId,
+      AttendStatusEnum attendStatus, int? groupId) async {
     try {
       if (errorOnSearchedStudent) throw 'حدث خطأ اثناء تحضير الطالب';
       emit(AttendStudentLoadingState());
+      if (attendStatus == AttendStatusEnum.cancel) {
+        Methods.canDeletePermission(context.loggedInPermissions?.attendances);
+      } else if (addNew) {
+        Methods.canCreatePermission(context.loggedInPermissions?.attendances);
+      } else {
+        Methods.canEditPermission(context.loggedInPermissions?.attendances);
+      }
       final res = await AppServices.storeAttendance(
         lectureId: lectureId,
         studentId: searchedStudent!.id.toString(),
-        attend_status: attendStatus,
+        attend_status: attendStatus.getAttendStatusIndex,
         groupId: groupId,
       );
       if (res['attendance'] != null) {
@@ -215,19 +226,21 @@ class StudentCubit extends Cubit<StudentStates> {
     }
   }
 
-  Future<void> addHomeWork(
-      String lectureId, HomeworkStatusEnum homeworkStatus) async {
-    _addStudentHomework(lectureId, homeworkStatus.getHomeworkStatusIndex);
-  }
-
-  Future<void> _addStudentHomework(String lectureId, int homeworkStatus) async {
+  Future<void> addHomeWork(BuildContext context, bool addNew, String lectureId,
+      HomeworkStatusEnum homeworkStatus) async {
     try {
       if (errorOnSearchedStudent) throw 'حدث خطأ اثناء تسجيل واجب الطالب';
+
       emit(AddHomeworkStudentLoadingState());
+      if (addNew) {
+        Methods.canCreatePermission(context.loggedInPermissions?.homeworks);
+      } else {
+        Methods.canEditPermission(context.loggedInPermissions?.homeworks);
+      }
       final res = await AppServices.storeHomework(
           lectureId: lectureId,
           studentId: searchedStudent!.id.toString(),
-          homework_status: homeworkStatus);
+          homework_status: homeworkStatus.getHomeworkStatusIndex);
       final homework = HomeworkModel.fromJson(res['homework']);
       _studentHomeworksResponse?.setHomework(homework);
       emit(AddHomeworkStudentSuccessState());
@@ -268,10 +281,18 @@ class StudentCubit extends Cubit<StudentStates> {
     }
   }
 
-  Future<void> addPayment(String paymentId, PaymentStatus paymentStatus) async {
+  Future<void> addPayment(BuildContext context, bool addNew, String paymentId,
+      PaymentStatus paymentStatus) async {
     try {
       if (errorOnSearchedStudent) throw 'حدث خطأ اثناء تسجيل واجب الطالب';
       emit(AddPaymentLoadingState());
+      if (addNew) {
+        Methods.canCreatePermission(
+            context.loggedInPermissions?.student_payments);
+      } else {
+        Methods.canEditPermission(
+            context.loggedInPermissions?.student_payments);
+      }
       final res = await AppServices.storeStudentPayment(
           payment_id: paymentId,
           student_id: searchedStudent!.id.toString(),
