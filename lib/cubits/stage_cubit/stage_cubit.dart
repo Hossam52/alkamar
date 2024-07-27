@@ -158,4 +158,15 @@ class StageCubit extends Cubit<StageStates> {
       emit(AddGroupErrorState(error: e.toString()));
     }
   }
+
+  Future<void> addEmptyStudents(int studentsCount) async {
+    try {
+      emit(AddEmptyStudentsLoadingState());
+      final res = await AppServices.createEmptyStudents(
+          stageId: stage.id, count: studentsCount);
+      emit(AddEmptyStudentsSuccessState());
+    } catch (e) {
+      emit(AddEmptyStudentsErrorState(e.toString()));
+    }
+  }
 }

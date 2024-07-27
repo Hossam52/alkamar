@@ -2,6 +2,7 @@ import 'package:alqamar/cubits/app_cubit/app_cubit.dart';
 import 'package:alqamar/cubits/stage_cubit/stage_cubit.dart';
 import 'package:alqamar/cubits/stage_cubit/stage_states.dart';
 import 'package:alqamar/models/stage/stage_model.dart';
+import 'package:alqamar/screens/stage_data/widgets/add_empty_students_widget.dart';
 import 'package:alqamar/screens/stage_data/widgets/add_group_widget.dart';
 import 'package:alqamar/screens/stage_data/widgets/add_payment_widget.dart';
 import 'package:alqamar/screens/students/student_homeworks/student_list_homeworks_screen.dart';
@@ -191,6 +192,18 @@ class _StageDataScreenState extends State<StageDataScreen> {
                       icon: Icons.add,
                       onPressed: () {
                         _showDialog(context, const AddGroupWidget());
+                      },
+                    ),
+                  if (AppCubit.instance(context)
+                          .permissions
+                          ?.students
+                          ?.create ??
+                      false)
+                    _CustomItem(
+                      title: 'إضافة طلاب جدد الي المرحلة',
+                      icon: Icons.add,
+                      onPressed: () {
+                        _showDialog(context, const AddEmptyStudentsWidget());
                       },
                     ),
                   _CustomItem(

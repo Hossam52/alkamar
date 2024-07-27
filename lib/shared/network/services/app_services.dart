@@ -595,4 +595,23 @@ class AppServices {
       rethrow;
     }
   }
+
+  static Future<Map<String, dynamic>> createEmptyStudents({
+    required int stageId,
+    required int count,
+  }) async {
+    try {
+      final response = await AppDioHelper.postData(
+        url: EndPoints.createEmptyStudents,
+        token: Constants.token,
+        data: {
+          'stage_id': stageId,
+          'count': count,
+        },
+      );
+      return response.data;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

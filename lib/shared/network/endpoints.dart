@@ -20,6 +20,7 @@ class EndPoints {
 
   // Students endpoints
   static const String createStudent = '/students/create';
+  static const String createEmptyStudents = '/students/createEmptyStudents';
   static const String updateStudent = '/students/update';
   static const String listStudents = '/students/list';
   static const String studentAttendances = '/students/attendance';

@@ -32,6 +32,12 @@ class _StudentListAttendancesState extends State<StudentListAttendances> {
             Methods.showSuccessSnackBar(
                 context, 'تم التصدير بنجاح يمكنك التحميل');
           }
+          if (state is GenerateQrsErrorState) {
+            Methods.showSnackBar(context, state.error);
+          }
+          if (state is DownloadStudentQrsErrorState) {
+            Methods.showSnackBar(context, state.error);
+          }
         },
         builder: (context, state) {
           final studentCubit = StudentCubit.instance(context);

@@ -368,8 +368,8 @@ class StudentCubit extends Cubit<StudentStates> {
     try {
       emit(DownloadStudentQrsLoadingState());
       // requests permission for downloading the file
-      bool hasPermission = await _requestWritePermission();
-      if (!hasPermission) return;
+      // bool hasPermission = await _requestWritePermission();
+      // if (!hasPermission) throw 'ليس لديك صلاحيات للتحميل';
 
       // gets the directory where we will download the file.
       // var dir = await getApplicationDocumentsDirectory();
@@ -389,7 +389,15 @@ class StudentCubit extends Cubit<StudentStates> {
 
   // requests storage permission
   Future<bool> _requestWritePermission() async {
-    await Permission.storage.request();
-    return await Permission.storage.request().isGranted;
+    if (await Permission.storage.isGranted) return true;
+    //openAppSettings();
+    // Request the permission
+    final permissionStatus = await Permission.storage.request();
+
+    // Log the permission status
+    log(permissionStatus.toString());
+
+    // Return whether the permission is granted
+    return permissionStatus.isGranted;
   }
 }

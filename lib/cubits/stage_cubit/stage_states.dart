@@ -5,6 +5,16 @@ abstract class StageStates {}
 
 class IntitalStageState extends StageStates {}
 
+abstract class StageSuccessState extends StageStates {
+  final String message;
+  StageSuccessState([this.message = ""]);
+}
+
+abstract class StageErrorState extends StageStates {
+  final String error;
+  StageErrorState(this.error);
+}
+
 //
 //CreateStudent online fetch data
 class CreateStudentLoadingState extends StageStates {}
@@ -78,4 +88,15 @@ class AddGroupSuccessState extends StageStates {}
 class AddGroupErrorState extends StageStates {
   final String error;
   AddGroupErrorState({required this.error});
+}
+
+//AddEmptyStudents online fetch data
+class AddEmptyStudentsLoadingState extends StageStates {}
+
+class AddEmptyStudentsSuccessState extends StageSuccessState {
+  AddEmptyStudentsSuccessState([super.message = ""]);
+}
+
+class AddEmptyStudentsErrorState extends StageErrorState {
+  AddEmptyStudentsErrorState(super.error);
 }
